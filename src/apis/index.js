@@ -1,17 +1,25 @@
-// TODO: thay BASE_URL bằng URL thực tế khi có backend
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+import { API_ROOT } from "@/utils"
+import axios from 'axios'
 
-const request = async (method, path, body) => {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-  })
-  if (!res.ok) throw new Error(await res.text())
-  return res.json()
+const request = async (method, path, data) => {
+  try {
+    const res = await axios({
+      method,
+      url: `${API_ROOT}${path}`,
+      data, 
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    const errorMessage = 
+      error.response?.data?.message || 
+      error.response?.data || 
+      error.message;
+      
+    throw new Error(errorMessage, { cause: error });
+  }
 }
 
-// ─── Vocab ───────────────────────────────────────────────
 export const vocabApi = {
   getAll:  ()         => request('GET',    '/vocabs'),
   getOne:  (id)       => request('GET',    `/vocabs/${id}`),
@@ -20,7 +28,6 @@ export const vocabApi = {
   remove:  (id)       => request('DELETE', `/vocabs/${id}`),
 }
 
-// ─── Quote ───────────────────────────────────────────────
 export const quoteApi = {
   getAll:  ()         => request('GET',    '/quotes'),
   getOne:  (id)       => request('GET',    `/quotes/${id}`),
@@ -29,7 +36,6 @@ export const quoteApi = {
   remove:  (id)       => request('DELETE', `/quotes/${id}`),
 }
 
-// ─── Vocab-Category ────────────────────────────────────────────
 export const vocabCategoryApi = {
   getAll:  ()         => request('GET',    '/vocab-category'),
   create:  (data)     => request('POST',   '/vocab-category', data),
@@ -37,7 +43,6 @@ export const vocabCategoryApi = {
   remove:  (id)       => request('DELETE', `/vocab-category/${id}`),
 }
 
-// ─── Quote-Category ────────────────────────────────────────────
 export const quoteCategoryApi = {
   getAll:  ()         => request('GET',    '/quote-category'),
   create:  (data)     => request('POST',   '/quote-category', data),
@@ -45,14 +50,13 @@ export const quoteCategoryApi = {
   remove:  (id)       => request('DELETE', `/quote-category/${id}`),
 }
 
-// ─── Auth ────────────────────────────────────────────────
-export const authApi = {
-  login:    (data) => request('POST', '/auth/login', data),
-  register: (data) => request('POST', '/auth/register', data),
-  me:       ()     => request('GET',  '/auth/me'),
+export const authAdminApi = {
+  loginAdmin:    (data) => request('POST', '/auth/login', data),
+  registerAdmin: (data) => request('POST', '/auth/register', data),
+  logoutAdmin: (data) => request('POST', '/auth/register', data),
+  refreshTokenAdmin: (data) => request('POST', '/auth/register', data),
 }
 
-// ─── Admin ───────────────────────────────────────────────
 export const adminApi = {
   getAll:  ()         => request('GET',    '/admins'),
   create:  (data)     => request('POST',   '/admins', data),
@@ -60,13 +64,11 @@ export const adminApi = {
   remove:  (id)       => request('DELETE', `/admins/${id}`),
 }
 
-// ─── User ─────────────────────────────────────────────────
 export const userApi = {
   getAll:  ()         => request('GET',   '/users'),
   update:  (id, data) => request('PATCH', `/users/${id}`, data),
 }
 
-// ─── Role ─────────────────────────────────────────────────
 export const roleApi = {
   getAll:  ()         => request('GET',    '/roles'),
   create:  (data)     => request('POST',   '/roles', data),
@@ -74,7 +76,6 @@ export const roleApi = {
   remove:  (id)       => request('DELETE', `/roles/${id}`),
 }
 
-// ─── Permission ───────────────────────────────────────────
 export const permissionApi = {
   getMatrix: ()     => request('GET',  '/permissions/matrix'),
   save:      (data) => request('POST', '/permissions/matrix', data),

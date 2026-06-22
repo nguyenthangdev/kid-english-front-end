@@ -1,3 +1,5 @@
+export const API_ROOT = import.meta.env.VITE_API_ROOT
+
 export const CATEGORY_COLORS = {
   feelings: 'bg-pink-100 text-pink-700',
   numbers:  'bg-yellow-100 text-yellow-700',
