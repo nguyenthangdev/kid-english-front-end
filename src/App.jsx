@@ -1,63 +1,70 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, AdminAuthProvider } from '@/contexts/AuthContext'
-import { VocabProvider } from '@/contexts/VocabContext'
-import { QuoteProvider } from '@/contexts/QuoteContext'
-import { CategoryProvider } from '@/contexts/CategoryContext'
-import { ClientLayout } from '@/layouts/ClientLayout'
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { ClientProviders, AdminProviders } from './AppProviders'
+// import { ClientLayout } from '@/layouts/ClientLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
+import PrivateRouteAdmin from '@/components/admin/PrivateRoute'
+import UnauthorizedRoutesAdmin from '@/components/admin/UnauthorizedRoutes'
 import {
   LoginPage, RegisterPage, HomePage, VocabularyPage, QuotesPage, ProfilePage,
   AdminLoginPage, DashboardPage, VocabManagePage, QuoteManagePage,
   CategoryManagePage, AdminManagePage, UserManagePage, RoleManagePage,
-  PermissionsPage, AdminProfilePage,
+  PermissionsPage, AdminProfilePage, AdminSettingsPage,
 } from '@/pages'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AdminAuthProvider>
-        <VocabProvider>
-          <QuoteProvider>
-            <CategoryProvider>
-              <BrowserRouter>
-                <Routes>
-                  {/* Redirect gốc */}
-                  <Route path="/" element={<Navigate to="/home" replace />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/home" replace />} />
 
-                  {/* Auth client */}
-                  <Route path="/login"    element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
+      <Route path="/" element={
+        <ClientProviders>
+          <Outlet /> 
+        </ClientProviders>
+      }>
+        <Route path="home"       element={<HomePage />} />
+        <Route path="vocabulary" element={<VocabularyPage />} />
+        <Route path="quotes"     element={<QuotesPage />} />
+        <Route path="profile"    element={<ProfilePage />} /> 
+      </Route>
 
-                  {/* Client layout */}
-                  <Route element={<ClientLayout />}>
-                    <Route path="/home"       element={<HomePage />} />
-                    <Route path="/vocabulary" element={<VocabularyPage />} />
-                    <Route path="/quotes"     element={<QuotesPage />} />
-                    <Route path="/profile"    element={<ProfilePage />} />
-                  </Route>
+      <Route path="/" element={
+        <ClientProviders>
+          <Outlet />
+        </ClientProviders>
+      }>
+        <Route path="login"    element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
+      </Route>
 
-                  {/* Auth admin */}
-                  <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/admin/auth" element={
+        <AdminProviders>
+          <UnauthorizedRoutesAdmin />
+        </AdminProviders>
+      }>
+        <Route path="login" element={<AdminLoginPage />} />
+      </Route>
 
-                  {/* Admin layout */}
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                    <Route path="dashboard"   element={<DashboardPage />} />
-                    <Route path="vocabulary"  element={<VocabManagePage />} />
-                    <Route path="quotes"      element={<QuoteManagePage />} />
-                    <Route path="vocab-tags"  element={<CategoryManagePage />} />
-                    <Route path="admins"      element={<AdminManagePage />} />
-                    <Route path="users"       element={<UserManagePage />} />
-                    <Route path="roles"       element={<RoleManagePage />} />
-                    <Route path="permissions" element={<PermissionsPage />} />
-                    <Route path="profile"     element={<AdminProfilePage />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </CategoryProvider>
-          </QuoteProvider>
-        </VocabProvider>
-      </AdminAuthProvider>
-    </AuthProvider>
+
+      <Route path="/admin" element={
+        <AdminProviders>
+          <PrivateRouteAdmin>
+            <AdminLayout />
+          </PrivateRouteAdmin>
+        </AdminProviders>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard"   element={<DashboardPage />} />
+        <Route path="vocabulary"  element={<VocabManagePage />} />
+        <Route path="quotes"      element={<QuoteManagePage />} />
+        <Route path="vocab-tags"  element={<CategoryManagePage />} />
+        <Route path="admins"      element={<AdminManagePage />} />
+        <Route path="users"       element={<UserManagePage />} />
+        <Route path="roles"       element={<RoleManagePage />} />
+        <Route path="permissions" element={<PermissionsPage />} />
+        <Route path="profile"     element={<AdminProfilePage />} />
+        <Route path="settings"    element={<AdminSettingsPage />} />
+      </Route>
+
+    </Routes>
   )
 }

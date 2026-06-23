@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/admin/AdminAuthContext'
 
 const NAV = [
   { group: 'Học tập', items: [

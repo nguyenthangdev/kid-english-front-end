@@ -1,23 +1,26 @@
 import { API_ROOT } from "@/utils"
 import axios from 'axios'
+import authorizedAxiosAdmin from '@/utils/authorizedAxiosAdmin'
 
 const request = async (method, path, data) => {
-  try {
-    const res = await axios({
-      method,
-      url: `${API_ROOT}${path}`,
-      data, 
-      withCredentials: true,
-    });
-    return res.data;
-  } catch (error) {
-    const errorMessage = 
-      error.response?.data?.message || 
-      error.response?.data || 
-      error.message;
-      
-    throw new Error(errorMessage, { cause: error });
-  }
+  const res = await axios({
+    method,
+    url: `${API_ROOT}${path}`,
+    data, 
+    withCredentials: true,
+  });
+  return res.data;
+}
+
+const requestAuthorized = async (method, path, data) => {
+  const res = await authorizedAxiosAdmin({
+    method,
+    url: `${API_ROOT}${path}`,
+    data,
+    withCredentials: true,
+  })
+
+  return res.data
 }
 
 export const vocabApi = {
@@ -51,10 +54,11 @@ export const quoteCategoryApi = {
 }
 
 export const authAdminApi = {
-  loginAdmin:    (data) => request('POST', '/auth/login', data),
-  registerAdmin: (data) => request('POST', '/auth/register', data),
-  logoutAdmin: (data) => request('POST', '/auth/register', data),
-  refreshTokenAdmin: (data) => request('POST', '/auth/register', data),
+  loginAdmin:         (data) => request('POST', '/admin/auth/login', data),
+  logoutAdmin:        ()     => request('POST', '/admin/auth/logout'),
+  registerAdmin:      (data) => request('POST', '/admin/auth/register', data),
+  refreshTokenAdmin:  ()     => request('POST', '/admin/auth/refresh-token'),
+  me:                 ()     => requestAuthorized('GET',  '/admin/me'),
 }
 
 export const adminApi = {

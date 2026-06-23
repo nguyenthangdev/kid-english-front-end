@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/contexts/AuthContext'
+// import { useAuth } from '@/contexts/admin/AdminAuthContext'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  // const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const handleLogin = () => {
     // TODO: gọi authApi.login({ email, password }) ở đây
-    login({ name: 'Nguyễn Văn An', email }, 'mock-token')
+    // login({ name: 'Nguyễn Văn An', email }, 'mock-token')
     navigate('/home')
   }
 
