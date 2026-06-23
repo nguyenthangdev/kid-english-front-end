@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { authAdminApi } from '@/apis/index'
 import { toast } from 'react-toastify'
+import { API_ROOT } from '@/utils'
 
 const authorizedAxiosInstance = axios.create()
 
@@ -17,11 +17,23 @@ authorizedAxiosInstance.interceptors.request.use((config) => {
 
 let refreshTokenPromise = null
 
+const logoutAdmin = () => axios({
+  method: 'POST',
+  url: `${API_ROOT}/admin/auth/logout`,
+  withCredentials: true,
+})
+
+const refreshTokenAdmin = () => axios({
+  method: 'POST',
+  url: `${API_ROOT}/admin/auth/refresh-token`,
+  withCredentials: true,
+})
+
 authorizedAxiosInstance.interceptors.response.use((response) => {
   return response
 }, async (error) => {
   if (error.response?.status === 401) {
-    await authAdminApi.logoutAdmin().catch(() => {}) // Logout phía server
+    await logoutAdmin().catch(() => {}) // Logout phía server
 
     // Thay vì location.href, hãy bắn ra một sự kiện
     const event = new CustomEvent('force-logout')
@@ -34,7 +46,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   if (error.response?.status === 410 && originalRequest) {
 
     if (originalRequest._retry) {
-      await authAdminApi.logoutAdmin().catch(() => {}) // Logout phía server
+      await logoutAdmin().catch(() => {}) // Logout phía server
 
       // Thay vì location.href, hãy bắn ra một sự kiện
       const event = new CustomEvent('force-logout')
@@ -46,12 +58,12 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     originalRequest._retry = true
 
     if (!refreshTokenPromise) {
-      refreshTokenPromise = authAdminApi.refreshTokenAdmin()
+      refreshTokenPromise = refreshTokenAdmin()
         .then((res) => {
           return res
         })
         .catch(async (_error) => {
-          await authAdminApi.refreshTokenAdmin()
+          await logoutAdmin()
             .catch(() => {})
 
           const event = new CustomEvent('force-logout')

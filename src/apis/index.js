@@ -9,6 +9,7 @@ const request = async (method, path, data) => {
     data, 
     withCredentials: true,
   });
+  console.log('res: ', res)
   return res.data;
 }
 
@@ -59,6 +60,9 @@ export const authAdminApi = {
   registerAdmin:      (data) => request('POST', '/admin/auth/register', data),
   refreshTokenAdmin:  ()     => request('POST', '/admin/auth/refresh-token'),
   me:                 ()     => requestAuthorized('GET',  '/admin/me'),
+  updateMe:           (data) => requestAuthorized('PATCH', '/admin/me', data),
+  changePassword:     (data) => requestAuthorized('PATCH', '/admin/me/password', data),
+  uploadAvatar:       (data) => requestAuthorized('POST', '/admin/me/avatar', data),
 }
 
 export const adminApi = {
