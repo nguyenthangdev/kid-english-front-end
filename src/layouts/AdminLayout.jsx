@@ -1,6 +1,8 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
-import { useAdminAuth } from '@/contexts/AuthContext'
+import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
+import { toast } from 'react-toastify'
+import { Bell, ChevronDown, LogOut, Settings, User } from 'lucide-react'
 
 const NAV = [
   { group: 'Tổng quan', items: [
@@ -22,6 +24,7 @@ const NAV = [
   ]},
   { group: 'Tài khoản', items: [
     { to: '/admin/profile',     icon: '👤', label: 'Hồ sơ của tôi' },
+    { to: '/admin/settings',    icon: '⚙️', label: 'Cài đặt' },
   ]},
 ]
 
@@ -35,12 +38,19 @@ const TITLES = {
   '/admin/roles':       '🔑 Nhóm quyền',
   '/admin/permissions': '📋 Ma trận phân quyền',
   '/admin/profile':     '👤 Hồ sơ của tôi',
+  '/admin/settings':    '⚙️ Cài đặt',
 }
 
 export function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { admin, logout } = useAdminAuth()
+
+  const handleLogout = async () => {
+    const response = await logout()
+    toast.success(response?.message || 'Đăng xuất thành công!')
+    navigate('/admin/auth/login', { replace: true })
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -77,7 +87,7 @@ export function AdminLayout() {
             <div className="text-sm font-bold text-gray-800 truncate">{admin?.name ?? 'Super Admin'}</div>
             <div className="text-xs text-gray-400 truncate">{admin?.email ?? 'admin@kidenglish.com'}</div>
           </div>
-          <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm" title="Đăng xuất">⏏</button>
+          <button onClick={handleLogout} className="text-gray-400 hover:text-gray-600 text-sm" title="Đăng xuất">⏏</button>
         </div>
       </aside>
 
@@ -86,8 +96,54 @@ export function AdminLayout() {
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-7 sticky top-0 z-40">
           <h1 className="text-lg font-bold text-gray-800">{TITLES[pathname] ?? 'Admin'}</h1>
           <div className="flex items-center gap-2">
-            <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50">🔔</button>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm cursor-pointer">A</div>
+            <button className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700" title="Thông báo">
+              <Bell className="h-4 w-4" />
+            </button>
+
+            <div className="relative group">
+              <button className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white pl-1 pr-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500">
+                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                  {admin?.name?.[0] ?? 'A'}
+                </span>
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </button>
+
+              <div className="invisible absolute right-0 top-full z-50 w-56 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <div className="border-b border-gray-100 px-4 py-3">
+                    <div className="truncate text-sm font-bold text-gray-800">{admin?.name ?? 'Super Admin'}</div>
+                    <div className="truncate text-xs text-gray-400">{admin?.email ?? 'admin@kidenglish.com'}</div>
+                  </div>
+
+                  <div className="py-1">
+                    <button
+                      onClick={() => navigate('/admin/profile')}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold text-gray-600 hover:bg-violet-50 hover:text-violet-700"
+                    >
+                      <User className="h-4 w-4" />
+                      Hồ sơ của tôi
+                    </button>
+                    <button
+                      onClick={() => navigate('/admin/settings')}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold text-gray-600 hover:bg-violet-50 hover:text-violet-700"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Cài đặt
+                    </button>
+                  </div>
+
+                  <div className="border-t border-gray-100 py-1">
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Đăng xuất
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </header>
         <main className="flex-1 p-7">

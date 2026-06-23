@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer } from 'react'
 import { categoryReducer } from '@/reducers/categoryReducer'
 import { MOCK_CATEGORIES } from '@/utils/mockData'

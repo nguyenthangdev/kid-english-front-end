@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer } from 'react'
 import { vocabReducer } from '@/reducers/vocabReducer'
 import { MOCK_VOCABS } from '@/utils/mockData'

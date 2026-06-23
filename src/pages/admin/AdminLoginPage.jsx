@@ -1,20 +1,57 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAdminAuth } from '@/contexts/AuthContext'
+import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
+import { authAdminApi } from '@/apis/index'
+import { Loader2 } from 'lucide-react'
+import { loginSchema } from '@/validations/admin/auth.validation'
+import { toast } from 'react-toastify'
 
 export function AdminLoginPage() {
   const navigate = useNavigate()
   const { login } = useAdminAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = () => {
-    // TODO: gọi authApi.login({ email, password }) ở đây
-    login({ name: 'Super Admin', email }, 'mock-admin-token')
-    navigate('/admin/dashboard')
+  // 2. Khởi tạo react-hook-form với zodResolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    }
+  })
+
+  const onSubmit = async (data) => {
+    try {
+      setIsLoading(true)
+
+      const response = await authAdminApi.loginAdmin({ 
+        email: data.email, 
+        password: data.password 
+      })
+      if (response.code === 200) {
+        login(response.accountAdmin, response.role)
+        toast.success(response.message)
+
+        navigate('/admin/dashboard')
+      } else {
+        toast.error(response.message)
+      }
+    } catch (error) {
+      if (error.response?.status === 429) {
+        toast.error('Bạn đã thử quá nhiều lần. Vui lòng quay lại sau 1 phút!')
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -25,11 +62,56 @@ export function AdminLoginPage() {
           <div className="text-2xl font-extrabold text-violet-600">Admin Panel</div>
           <p className="text-sm text-gray-500 mt-1">Đăng nhập quản trị</p>
         </div>
-        <div className="space-y-4">
-          <div><Label>Email</Label><Input className="mt-1" type="email" placeholder="admin@kidenglish.com" value={email} onChange={e => setEmail(e.target.value)} /></div>
-          <div><Label>Mật khẩu</Label><Input className="mt-1" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} /></div>
-          <Button className="w-full bg-violet-600 hover:bg-violet-700" onClick={handleLogin}>🚀 Đăng nhập</Button>
-        </div>
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          
+          {/* Box Email */}
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input 
+              id="email"
+              className={`mt-1 ${errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`} 
+              type="email" 
+              placeholder="admin@kidenglish.com" 
+              disabled={isLoading}
+              {...register('email')} 
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500 mt-1.5">{errors.email.message}</p>
+            )}
+          </div>
+          
+          {/* Box Password */}
+          <div>
+            <Label htmlFor="password">Mật khẩu</Label>
+            <Input 
+              id="password"
+              className={`mt-1 ${errors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}`} 
+              type="password" 
+              placeholder="••••••••" 
+              disabled={isLoading}
+              {...register('password')} 
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500 mt-1.5">{errors.password.message}</p>
+            )}
+          </div>
+       
+          <Button 
+            type="submit"
+            className="w-full bg-violet-600 hover:bg-violet-700 mt-2" 
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang xử lý...
+              </>
+            ) : (
+              '🚀 Đăng nhập'
+            )}
+          </Button>
+        </form>
       </div>
     </div>
   )

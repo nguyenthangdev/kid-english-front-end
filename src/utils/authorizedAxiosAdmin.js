@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { fetchLogoutAPI, refreshTokenAPI } from '~/apis/admin/auth.api'
+import { authAdminApi } from '@/apis/index'
 import { toast } from 'react-toastify'
 
 const authorizedAxiosInstance = axios.create()
@@ -21,7 +21,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   return response
 }, async (error) => {
   if (error.response?.status === 401) {
-    await fetchLogoutAPI().catch(() => {}) // Logout phía server
+    await authAdminApi.logoutAdmin().catch(() => {}) // Logout phía server
 
     // Thay vì location.href, hãy bắn ra một sự kiện
     const event = new CustomEvent('force-logout')
@@ -34,7 +34,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   if (error.response?.status === 410 && originalRequest) {
 
     if (originalRequest._retry) {
-      await fetchLogoutAPI().catch(() => {}) // Logout phía server
+      await authAdminApi.logoutAdmin().catch(() => {}) // Logout phía server
 
       // Thay vì location.href, hãy bắn ra một sự kiện
       const event = new CustomEvent('force-logout')
@@ -46,12 +46,12 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     originalRequest._retry = true
 
     if (!refreshTokenPromise) {
-      refreshTokenPromise = refreshTokenAPI()
+      refreshTokenPromise = authAdminApi.refreshTokenAdmin()
         .then((res) => {
           return res
         })
         .catch(async (_error) => {
-          await fetchLogoutAPI()
+          await authAdminApi.refreshTokenAdmin()
             .catch(() => {})
 
           const event = new CustomEvent('force-logout')
