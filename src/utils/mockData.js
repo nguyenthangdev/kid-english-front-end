@@ -1,16 +1,16 @@
 export const MOCK_VOCABS = [
-  { id: '1',  word: 'love',    phonetic: '/lʌv/',      meaning: 'yêu thương',  category: 'feelings', example: 'I love you.' },
-  { id: '2',  word: 'sad',     phonetic: '/sæd/',      meaning: 'buồn',         category: 'feelings', example: 'She looks sad.' },
-  { id: '3',  word: 'happy',   phonetic: '/hæp.i/',    meaning: 'vui vẻ',       category: 'feelings', example: 'I am happy today.' },
-  { id: '4',  word: 'three',   phonetic: '/θriː/',     meaning: 'số ba',        category: 'numbers',  example: 'I have three cats.' },
-  { id: '5',  word: 'two',     phonetic: '/tuː/',      meaning: 'số hai',       category: 'numbers',  example: 'Two plus two is four.' },
-  { id: '6',  word: 'one',     phonetic: '/wʌn/',      meaning: 'số một',       category: 'numbers',  example: 'One step at a time.' },
-  { id: '7',  word: 'green',   phonetic: '/ɡriːn/',    meaning: 'màu xanh lá', category: 'colors',   example: 'The grass is green.' },
-  { id: '8',  word: 'yellow',  phonetic: '/ˈjel.oʊ/', meaning: 'màu vàng',    category: 'colors',   example: 'The sun is yellow.' },
-  { id: '9',  word: 'red',     phonetic: '/red/',      meaning: 'màu đỏ',      category: 'colors',   example: 'Roses are red.' },
-  { id: '10', word: 'baby',    phonetic: '/ˈbeɪ.bi/', meaning: 'em bé',       category: 'family',   example: 'The baby is sleeping.' },
-  { id: '11', word: 'brother', phonetic: '/ˈbrʌð.ər/',meaning: 'anh/em trai', category: 'family',   example: 'My brother is tall.' },
-  { id: '12', word: 'cat',     phonetic: '/kæt/',      meaning: 'con mèo',     category: 'animals',  example: 'The cat is cute.' },
+  { id: '1',  word: 'love',    pronunciation: '/lʌv/',      meaning: 'yêu thương',  category: 'feelings', example: 'I love you.' },
+  { id: '2',  word: 'sad',     pronunciation: '/sæd/',      meaning: 'buồn',         category: 'feelings', example: 'She looks sad.' },
+  { id: '3',  word: 'happy',   pronunciation: '/hæp.i/',    meaning: 'vui vẻ',       category: 'feelings', example: 'I am happy today.' },
+  { id: '4',  word: 'three',   pronunciation: '/θriː/',     meaning: 'số ba',        category: 'numbers',  example: 'I have three cats.' },
+  { id: '5',  word: 'two',     pronunciation: '/tuː/',      meaning: 'số hai',       category: 'numbers',  example: 'Two plus two is four.' },
+  { id: '6',  word: 'one',     pronunciation: '/wʌn/',      meaning: 'số một',       category: 'numbers',  example: 'One step at a time.' },
+  { id: '7',  word: 'green',   pronunciation: '/ɡriːn/',    meaning: 'màu xanh lá', category: 'colors',   example: 'The grass is green.' },
+  { id: '8',  word: 'yellow',  pronunciation: '/ˈjel.oʊ/', meaning: 'màu vàng',    category: 'colors',   example: 'The sun is yellow.' },
+  { id: '9',  word: 'red',     pronunciation: '/red/',      meaning: 'màu đỏ',      category: 'colors',   example: 'Roses are red.' },
+  { id: '10', word: 'baby',    pronunciation: '/ˈbeɪ.bi/', meaning: 'em bé',       category: 'family',   example: 'The baby is sleeping.' },
+  { id: '11', word: 'brother', pronunciation: '/ˈbrʌð.ər/',meaning: 'anh/em trai', category: 'family',   example: 'My brother is tall.' },
+  { id: '12', word: 'cat',     pronunciation: '/kæt/',      meaning: 'con mèo',     category: 'animals',  example: 'The cat is cute.' },
 ]
 
 export const MOCK_CATEGORIES = [

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
-import { authAdminApi } from '@/apis/index'
+import { adminAuthApi } from '@/apis/admin/index'
 import { Loader2 } from 'lucide-react'
 import { loginSchema } from '@/validations/admin/auth.validation'
 import { toast } from 'react-toastify'
@@ -33,7 +33,7 @@ export function AdminLoginPage() {
     try {
       setIsLoading(true)
 
-      const response = await authAdminApi.loginAdmin({ 
+      const response = await adminAuthApi.loginAdmin({ 
         email: data.email, 
         password: data.password 
       })
