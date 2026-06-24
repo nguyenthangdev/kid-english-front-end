@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
 import { createContext, useContext, useEffect, useState } from 'react'
-import { authAdminApi } from '@/apis/index'
+import { adminAuthApi } from '@/apis/admin/index'
 import { Loader2 } from 'lucide-react'
 
 const AdminAuthContext = createContext(undefined)
@@ -16,7 +16,7 @@ export const AdminAuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const response = await authAdminApi.me()
+        const response = await adminAuthApi.me()
         
         if (response && response.accountAdmin) {
           setAccountAdmin(response.accountAdmin)
@@ -59,7 +59,7 @@ export const AdminAuthProvider = ({ children }) => {
     let response = null
 
     try {
-      response = await authAdminApi.logoutAdmin()
+      response = await adminAuthApi.logoutAdmin()
     } catch (error) {
       console.error('Lỗi khi logout:', error)
     } finally {
@@ -73,7 +73,7 @@ export const AdminAuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const response = await authAdminApi.me()
+      const response = await adminAuthApi.me()
       if (response && response.accountAdmin) {
         setAccountAdmin(response.accountAdmin)
         setRole(response.role || null)

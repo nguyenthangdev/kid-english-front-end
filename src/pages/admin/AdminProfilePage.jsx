@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Camera, KeyRound, RefreshCw, Save, Upload } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { authAdminApi } from '@/apis/index'
+import { adminAuthApi } from '@/apis/admin/index'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -68,8 +68,7 @@ export function AdminProfilePage() {
   }
 
   const handleUpdateProfile = async (data) => {
-    console.log('data: ', data)
-    const response = await authAdminApi.updateMe({
+    const response = await adminAuthApi.updateMe({
       fullName: data.fullName,
     })
 
@@ -81,14 +80,14 @@ export function AdminProfilePage() {
     const formData = new FormData()
     formData.append('avatar', data.avatar[0])
 
-    const response = await authAdminApi.uploadAvatar(formData)
+    const response = await adminAuthApi.uploadAvatar(formData)
     login(response.accountAdmin, response.role)
     avatarForm.reset()
     toast.success(response.message || 'Cập nhật ảnh đại diện thành công!')
   }
 
   const handleChangePassword = async (data) => {
-    const response = await authAdminApi.changePassword({
+    const response = await adminAuthApi.changePassword({
       currentPassword: data.currentPassword,
       newPassword: data.newPassword,
     })

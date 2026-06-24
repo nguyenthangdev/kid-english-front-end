@@ -32,7 +32,7 @@ const TITLES = {
   '/admin/dashboard':   '📊 Dashboard',
   '/admin/vocabulary':  '📖 Từ vựng của bé',
   '/admin/quotes':      '💬 Câu nói mỗi ngày',
-  '/admin/categories':  '🏷️ Danh mục từ vựng',
+  '/admin/categories':  '🏷️ Các thẻ từ vựng',
   '/admin/admins':      '🛡️ Tài khoản Admin',
   '/admin/users':       '👥 Người dùng',
   '/admin/roles':       '🔑 Nhóm quyền',

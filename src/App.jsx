@@ -7,7 +7,7 @@ import UnauthorizedRoutesAdmin from '@/components/admin/UnauthorizedRoutes'
 import {
   LoginPage, RegisterPage, HomePage, VocabularyPage, QuotesPage, ProfilePage,
   AdminLoginPage, DashboardPage, VocabManagePage, QuoteManagePage,
-  CategoryManagePage, AdminManagePage, UserManagePage, RoleManagePage,
+  VoCabTagsManagePage, AdminManagePage, UserManagePage, RoleManagePage,
   PermissionsPage, AdminProfilePage, AdminSettingsPage,
 } from '@/pages'
 
@@ -56,7 +56,7 @@ export default function App() {
         <Route path="dashboard"   element={<DashboardPage />} />
         <Route path="vocabulary"  element={<VocabManagePage />} />
         <Route path="quotes"      element={<QuoteManagePage />} />
-        <Route path="vocab-tags"  element={<CategoryManagePage />} />
+        <Route path="vocab-tags"  element={<VoCabTagsManagePage />} />
         <Route path="admins"      element={<AdminManagePage />} />
         <Route path="users"       element={<UserManagePage />} />
         <Route path="roles"       element={<RoleManagePage />} />
