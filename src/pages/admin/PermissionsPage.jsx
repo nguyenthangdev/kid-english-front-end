@@ -11,7 +11,7 @@ const buildMatrix = () => {
       MOCK_ACTIONS.forEach(a => {
         m[r.name][res][a] =
           r.name === 'Super Admin' ? true :
-          r.name === 'Content Manager' && ['Từ vựng', 'Câu nói', 'Danh mục'].includes(res) && a !== 'Xóa' ? true :
+          r.name === 'Content Manager' && ['Từ vựng', 'Câu nói', 'Thẻ'].includes(res) && a !== 'Xóa' ? true :
           r.name === 'Moderator' && a === 'Xem'
       })
     })

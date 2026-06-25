@@ -2,37 +2,36 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
 import { toast } from 'react-toastify'
-import { Bell, ChevronDown, LogOut, Settings, User } from 'lucide-react'
-
+import { Bell, Book, Building, ChevronDown, Key, LayoutDashboard, LogOut, MessageSquareText, Settings, ShieldUser, Tag, TagPlus, User, UserPen, UsersRound } from 'lucide-react'
 const NAV = [
   { group: 'Tổng quan', items: [
-    { to: '/admin/dashboard',   icon: '📊', label: 'Dashboard' },
+    { to: '/admin/dashboard',   icon: <LayoutDashboard />, label: 'Tổng quan' },
   ]},
   { group: 'Nội dung', items: [
-    { to: '/admin/vocabulary',  icon: '📖', label: 'Từ vựng của bé' },
-    { to: '/admin/quotes',      icon: '💬', label: 'Câu nói mỗi ngày' },
-    { to: '/admin/vocab-tags',  icon: '🏷️', label: 'Các thẻ từ vựng' },
-    { to: '/admin/quote-tags',  icon: '🏷️', label: 'Các thẻ câu nói' },
+    { to: '/admin/vocabulary',  icon: <Book />, label: 'Từ vựng của bé' },
+    { to: '/admin/quotes',      icon: <MessageSquareText />, label: 'Câu nói mỗi ngày' },
+    { to: '/admin/vocab-tags',  icon: <Tag />, label: 'Các thẻ từ vựng' },
+    { to: '/admin/quote-tags',  icon: <TagPlus />, label: 'Các thẻ câu nói' },
   ]},
   { group: 'Người dùng', items: [
-    { to: '/admin/users',       icon: '👥', label: 'Người dùng' },
-    { to: '/admin/admins',      icon: '🛡️', label: 'Tài khoản Admin' },
+    { to: '/admin/users',       icon: <UsersRound />, label: 'Người dùng' },
+    { to: '/admin/admins',      icon: <ShieldUser />, label: 'Tài khoản Admin' },
   ]},
   { group: 'Phân quyền', items: [
-    { to: '/admin/roles',       icon: '🔑', label: 'Nhóm quyền' },
-    { to: '/admin/permissions', icon: '📋', label: 'Ma trận phân quyền' },
+    { to: '/admin/roles',       icon: <Key />, label: 'Nhóm quyền' },
+    { to: '/admin/permissions', icon: <Building />, label: 'Ma trận phân quyền' },
   ]},
   { group: 'Tài khoản', items: [
-    { to: '/admin/profile',     icon: '👤', label: 'Hồ sơ của tôi' },
-    { to: '/admin/settings',    icon: '⚙️', label: 'Cài đặt' },
+    { to: '/admin/profile',     icon: <UserPen />, label: 'Hồ sơ của tôi' },
+    { to: '/admin/settings',    icon: <Settings />, label: 'Cài đặt' },
   ]},
 ]
 
 const TITLES = {
-  '/admin/dashboard':   '📊 Dashboard',
+  '/admin/dashboard':   '📊 Tổng quan',
   '/admin/vocabulary':  '📖 Từ vựng của bé',
   '/admin/quotes':      '💬 Câu nói mỗi ngày',
-  '/admin/categories':  '🏷️ Danh mục từ vựng',
+  '/admin/categories':  '🏷️ Các thẻ từ vựng',
   '/admin/admins':      '🛡️ Tài khoản Admin',
   '/admin/users':       '👥 Người dùng',
   '/admin/roles':       '🔑 Nhóm quyền',
@@ -45,7 +44,6 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { admin, logout } = useAdminAuth()
-
   const handleLogout = async () => {
     const response = await logout()
     toast.success(response?.message || 'Đăng xuất thành công!')
@@ -58,7 +56,7 @@ export function AdminLayout() {
       <aside className="w-60 bg-white border-r border-gray-200 flex flex-col fixed top-0 left-0 h-screen z-50">
         <div className="px-5 py-5 border-b border-gray-100">
           <div className="text-xl font-extrabold text-violet-600">🛡️ KidEnglish</div>
-          <div className="text-xs text-gray-400 mt-0.5">Admin Panel</div>
+          <div className="text-xs text-gray-400 mt-0.5">Trang Quản Trị</div>
         </div>
 
         <nav className="flex-1 py-3 overflow-y-auto">
@@ -80,9 +78,17 @@ export function AdminLayout() {
         </nav>
 
         <div className="px-5 py-3.5 border-t border-gray-100 flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            {admin?.name?.[0] ?? 'A'}
-          </div>
+          {admin?.avatarUrl ? (
+            <img 
+              src={admin.avatarUrl} 
+              alt={admin?.name ?? 'Avatar'} 
+              className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-gray-100 shadow-sm"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              {admin?.name?.[0]?.toUpperCase() ?? 'A'}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold text-gray-800 truncate">{admin?.name ?? 'Super Admin'}</div>
             <div className="text-xs text-gray-400 truncate">{admin?.email ?? 'admin@kidenglish.com'}</div>
@@ -102,9 +108,17 @@ export function AdminLayout() {
 
             <div className="relative group">
               <button className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white pl-1 pr-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500">
-                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                  {admin?.name?.[0] ?? 'A'}
-                </span>
+                {admin?.avatarUrl ? (
+                  <img 
+                    src={admin.avatarUrl} 
+                    alt={admin?.name ?? 'Avatar'} 
+                    className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-gray-100 shadow-sm"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    {admin?.name?.[0]?.toUpperCase() ?? 'A'}
+                  </div>
+                )}
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </button>
 

@@ -9,8 +9,8 @@ import UnauthorizedRoutesUser from '@/components/client/UnauthorizedRoutes'
 import {
   LoginPage, RegisterPage, HomePage, VocabularyPage, QuotesPage, ProfilePage,
   AdminLoginPage, DashboardPage, VocabManagePage, QuoteManagePage,
-  CategoryManagePage, AdminManagePage, UserManagePage, RoleManagePage,
-  PermissionsPage, AdminProfilePage, AdminSettingsPage,
+  VoCabTagsManagePage, AdminManagePage, UserManagePage, RoleManagePage,
+  PermissionsPage, AdminProfilePage, AdminSettingsPage, QuoteTagsManagePage
 } from '@/pages'
 
 export default function App() {
@@ -62,13 +62,14 @@ export default function App() {
         </AdminProviders>
       }>
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="vocabulary" element={<VocabManagePage />} />
-        <Route path="quotes" element={<QuoteManagePage />} />
-        <Route path="vocab-tags" element={<CategoryManagePage />} />
-        <Route path="admins" element={<AdminManagePage />} />
-        <Route path="users" element={<UserManagePage />} />
-        <Route path="roles" element={<RoleManagePage />} />
+        <Route path="dashboard"   element={<DashboardPage />} />
+        <Route path="vocabulary"  element={<VocabManagePage />} />
+        <Route path="quotes"      element={<QuoteManagePage />} />
+        <Route path="vocab-tags"  element={<VoCabTagsManagePage />} />
+        <Route path="quote-tags"  element={<QuoteTagsManagePage />} />
+        <Route path="admins"      element={<AdminManagePage />} />
+        <Route path="users"       element={<UserManagePage />} />
+        <Route path="roles"       element={<RoleManagePage />} />
         <Route path="permissions" element={<PermissionsPage />} />
         <Route path="profile" element={<AdminProfilePage />} />
         <Route path="settings" element={<AdminSettingsPage />} />

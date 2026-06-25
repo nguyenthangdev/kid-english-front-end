@@ -10,12 +10,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { MOCK_USERS } from '@/utils/mockData'
+import { SquarePen, Trash2 } from 'lucide-react'
 
 export function UserManagePage() {
   const [users, setUsers] = useState(MOCK_USERS)
   const { query, setQuery, filtered } = useSearch(users, ['name', 'email'])
   const { page, setPage, totalPages, paged } = usePagination(filtered)
   const [modal, setModal] = useState(null)
+  const [deleteId, setDeleteId] = useState(null)
 
   const handleSave = () => {
     // TODO: gọi userApi.update(modal.id, form)
@@ -53,7 +55,10 @@ export function UserManagePage() {
                   <td className="px-5 py-4"><span className="text-xs font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">🔥 {u.streak}</span></td>
                   <td className="px-5 py-4"><StatusBadge active={u.status === 'active'} /></td>
                   <td className="px-5 py-4">
-                    <button onClick={() => setModal(u)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">✏️</button>
+                    <div className="flex gap-2">
+                      <button onClick={() => setModal(u)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4"/></button>
+                      <button onClick={() => setDeleteId(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4"/></button>
+                    </div>
                   </td>
                 </tr>
               ))}

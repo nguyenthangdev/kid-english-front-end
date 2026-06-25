@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
-import { authAdminApi } from '@/apis/index'
+import { adminAuthApi } from '@/apis/admin/index'
 import { Loader2 } from 'lucide-react'
 import { loginSchema } from '@/validations/admin/auth.validation'
 import { toast } from 'react-toastify'
@@ -33,7 +33,7 @@ export function AdminLoginPage() {
     try {
       setIsLoading(true)
 
-      const response = await authAdminApi.loginAdmin({ 
+      const response = await adminAuthApi.loginAdmin({ 
         email: data.email, 
         password: data.password 
       })
@@ -59,7 +59,7 @@ export function AdminLoginPage() {
       <div className="bg-white rounded-2xl p-10 w-full max-w-md shadow-xl">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🛡️</div>
-          <div className="text-2xl font-extrabold text-violet-600">Admin Panel</div>
+          <div className="text-2xl font-extrabold text-violet-600">Trang Quản Trị</div>
           <p className="text-sm text-gray-500 mt-1">Đăng nhập quản trị</p>
         </div>
         

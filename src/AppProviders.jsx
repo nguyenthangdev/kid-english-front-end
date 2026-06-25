@@ -4,6 +4,8 @@ import { VocabProvider } from '@/contexts/VocabContext'
 import { QuoteProvider } from '@/contexts/QuoteContext'
 import { CategoryProvider } from '@/contexts/CategoryContext'
 import { composeProviders } from './composeProviders'
+import { VocabTagsProvider } from './contexts/admin/VocabTagsContext'
+import { QuoteTagsProvider } from './contexts/admin/QuoteTagsContext'
 
 // 1. Nhóm Global: Các Provider dùng chung cho cả Client lẫn Admin
 const GlobalProvidersComposer = composeProviders(
@@ -30,3 +32,8 @@ const AdminProvidersComposer = composeProviders(
 export function AdminProviders({ children }) {
   return <AdminProvidersComposer>{children}</AdminProvidersComposer>
 }
+export const AdminProviders = composeProviders(
+  AdminAuthProvider,
+  VocabTagsProvider,
+  QuoteTagsProvider
+)

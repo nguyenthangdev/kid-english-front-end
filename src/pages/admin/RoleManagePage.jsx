@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { MOCK_ROLES } from '@/utils/mockData'
+import { SquarePen, Trash2 } from 'lucide-react'
 
 export function RoleManagePage() {
   const [roles, setRoles] = useState(MOCK_ROLES)
@@ -39,9 +40,9 @@ export function RoleManagePage() {
                 <td className="px-5 py-4 text-sm font-bold text-gray-800">{r.users} người</td>
                 <td className="px-5 py-4">
                   <div className="flex gap-2">
-                    <button onClick={() => openModal(r)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">✏️</button>
-                    <button onClick={() => setDeleteId(r.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-sm">🗑️</button>
-                  </div>
+                      <button onClick={() => setModal(r)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4"/></button>
+                      <button onClick={() => setDeleteId(r.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4"/></button>
+                    </div>
                 </td>
               </tr>
             ))}

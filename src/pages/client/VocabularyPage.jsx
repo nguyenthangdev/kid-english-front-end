@@ -40,7 +40,7 @@ export function VocabularyPage() {
           <div key={v.id} className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-400 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
             <div className="text-4xl mb-3">📖</div>
             <div className="text-xl font-extrabold text-gray-800 mb-0.5">{v.word}</div>
-            <div className="text-xs text-gray-400 mb-1">{v.phonetic}</div>
+            <div className="text-xs text-gray-400 mb-1">{v.pronunciation}</div>
             <div className="text-sm text-gray-600 mb-3">{v.meaning}</div>
             <CategoryBadge value={v.category} />
           </div>

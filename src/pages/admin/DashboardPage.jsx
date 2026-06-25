@@ -12,7 +12,7 @@ export function DashboardPage() {
     { icon: '👥', val: MOCK_USERS.length, label: 'Người dùng', bg: 'bg-blue-50',    ic: 'text-blue-500' },
     { icon: '📖', val: vocabs.length,     label: 'Từ vựng',    bg: 'bg-emerald-50', ic: 'text-emerald-500' },
     { icon: '💬', val: quotes.length,     label: 'Câu nói',    bg: 'bg-purple-50',  ic: 'text-purple-500' },
-    { icon: '🏷️', val: categories.length, label: 'Danh mục',   bg: 'bg-pink-50',    ic: 'text-pink-500' },
+    { icon: '🏷️', val: categories.length, label: 'Thẻ',   bg: 'bg-pink-50',    ic: 'text-pink-500' },
   ]
 
   const recent = [
