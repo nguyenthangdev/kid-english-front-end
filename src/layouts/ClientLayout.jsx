@@ -3,20 +3,26 @@ import { cn } from '@/utils/cn'
 import { useAuth } from '@/contexts/admin/AdminAuthContext'
 
 const NAV = [
-  { group: 'Học tập', items: [
-    { to: '/home',       icon: '🏠', label: 'Trang chủ' },
-    { to: '/vocabulary', icon: '📖', label: 'Từ vựng của Bé' },
-    { to: '/quotes',     icon: '💬', label: 'Câu nói mỗi ngày' },
-    { to: '/game',       icon: '🎮', label: 'Trò chơi học tập' },
-  ]},
-  { group: 'Phần thưởng', items: [
-    { to: '/sticker',     icon: '🎁', label: 'Sticker' },
-    { to: '/achievement', icon: '🏆', label: 'Thành tích' },
-  ]},
-  { group: 'Khác', items: [
-    { to: '/parent',  icon: '👨‍👩‍👧', label: 'Góc Phụ Huynh' },
-    { to: '/profile', icon: '⚙️',   label: 'Hồ sơ của tôi' },
-  ]},
+  {
+    group: 'Học tập', items: [
+      { to: '/', icon: '🏠', label: 'Trang chủ' },
+      { to: '/vocabulary', icon: '📖', label: 'Từ vựng của Bé' },
+      { to: '/quotes', icon: '💬', label: 'Câu nói mỗi ngày' },
+      { to: '/game', icon: '🎮', label: 'Trò chơi học tập' },
+    ]
+  },
+  {
+    group: 'Phần thưởng', items: [
+      { to: '/sticker', icon: '🎁', label: 'Sticker' },
+      { to: '/achievement', icon: '🏆', label: 'Thành tích' },
+    ]
+  },
+  {
+    group: 'Khác', items: [
+      { to: '/parent', icon: '👨‍👩‍👧', label: 'Góc Phụ Huynh' },
+      { to: '/profile', icon: '⚙️', label: 'Hồ sơ của tôi' },
+    ]
+  },
 ]
 
 export function ClientLayout() {
