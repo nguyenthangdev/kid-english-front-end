@@ -36,7 +36,10 @@ export const adminVocabApi = {
 }
 
 export const adminQuoteApi = {
-  getAll:  ()         => request('GET',    '/admin/quotes'),
+  getAll: (params) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return request('GET', `/admin/quotes${queryString}`);
+  },
   getOne:  (id)       => request('GET',    `/admin/quotes/${id}`),
   create:  (data)     => request('POST',   '/admin/quotes', data),
   update:  (id, data) => request('PATCH',  `/admin/quotes/${id}`, data),
@@ -55,10 +58,14 @@ export const vocabTagsApi = {
 }
 
 export const quoteTagsApi = {
-  getAll:  ()         => request('GET',    '/admin/tags?type=QUOTE'),
-  create:  (data)     => request('POST',   '/admin/tags', data),
-  update:  (id, data) => request('PATCH',  `/admin/tags/${id}`, data),
-  remove:  (id)       => request('DELETE', `/admin/tags/${id}`),
+  getAll: (params) => {
+    const finalParams = { type: 'QUOTE', ...params }
+    const queryString = new URLSearchParams(finalParams).toString()
+    return requestAuthorized('GET', `/admin/tags?${queryString}`) 
+  },
+  create:  (data)     => requestAuthorized('POST',   '/admin/tags', data),
+  update:  (id, data) => requestAuthorized('PATCH',  `/admin/tags/${id}`, data),
+  remove:  (id)       => requestAuthorized('DELETE', `/admin/tags/${id}`),
 }
 
 export const adminAuthApi = {

@@ -144,7 +144,7 @@ export function AdminProfilePage() {
             <div className="space-y-4 p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="fullName">Họ và tên</Label>
+                  <Label htmlFor="fullName">Họ và tên <span className="text-red-500">*</span></Label>
                   {/* <Input
                     id="fullName"
                     className={`mt-1 ${profileForm.formState.errors.fullName ? 'border-red-500' : ''}`}
@@ -198,7 +198,7 @@ export function AdminProfilePage() {
             </div>
             <div className="space-y-4 p-6">
               <div>
-                <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
+                <Label htmlFor="currentPassword">Mật khẩu hiện tại <span className="text-red-500">*</span></Label>
                 <Input
                   id="currentPassword"
                   className={`mt-1 ${passwordForm.formState.errors.currentPassword ? 'border-red-500' : ''}`}
@@ -213,7 +213,7 @@ export function AdminProfilePage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="newPassword">Mật khẩu mới</Label>
+                  <Label htmlFor="newPassword">Mật khẩu mới <span className="text-red-500">*</span></Label>
                   <Input
                     id="newPassword"
                     className={`mt-1 ${passwordForm.formState.errors.newPassword ? 'border-red-500' : ''}`}
@@ -227,7 +227,7 @@ export function AdminProfilePage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
+                  <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới <span className="text-red-500">*</span></Label>
                   <Input
                     id="confirmPassword"
                     className={`mt-1 ${passwordForm.formState.errors.confirmPassword ? 'border-red-500' : ''}`}
@@ -254,7 +254,7 @@ export function AdminProfilePage() {
           className="h-fit rounded-lg border border-gray-200 bg-white"
         >
           <div className="border-b border-gray-100 px-6 py-4">
-            <h2 className="font-extrabold text-gray-800">Ảnh đại diện</h2>
+            <h2 className="font-extrabold text-gray-800">Ảnh đại diện <span className="text-red-500">*</span></h2>
           </div>
           <div className="space-y-4 p-6">
             <div className="flex justify-center">
@@ -272,10 +272,10 @@ export function AdminProfilePage() {
             </div>
 
             <div>
-              <Label htmlFor="avatar" className="flex items-center gap-2">
+              {/* <Label htmlFor="avatar" className="flex items-center gap-2">
                 <Camera className="h-4 w-4" />
                 Chọn ảnh mới
-              </Label>
+              </Label> */}
               {/* <Input
                 id="avatar"
                 type="file"
@@ -284,7 +284,7 @@ export function AdminProfilePage() {
                 {...avatarForm.register('avatar')}
               /> */}
               <div>
-              <Label className="block text-sm font-medium mb-2 text-gray-700">Tải ảnh lên</Label>
+              {/* <Label className="block text-sm font-medium mb-2 text-gray-700">Tải ảnh lên</Label> */}
               
               {/* Khung viền đứt đoạn thay thế cho Input mặc định */}
               <Label
@@ -330,9 +330,9 @@ export function AdminProfilePage() {
                 </p>
               )}
             </div>
-              {avatarForm.formState.errors.avatar && (
+              {/* {avatarForm.formState.errors.avatar && (
                 <p className="mt-1.5 text-sm text-red-500">{avatarForm.formState.errors.avatar.message}</p>
-              )}
+              )} */}
 
               {previewUrl && (
                 <div className="mt-4 flex flex-col items-center animate-in fade-in zoom-in duration-300">

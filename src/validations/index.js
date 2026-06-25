@@ -2,7 +2,7 @@ export const validateVocab = (form) => {
   const errors = {}
   if (!form.word?.trim())    errors.word    = 'Vui lòng nhập từ vựng'
   if (!form.meaning?.trim()) errors.meaning = 'Vui lòng nhập nghĩa'
-  if (!form.category)        errors.category = 'Vui lòng chọn danh mục'
+  if (!form.category)        errors.category = 'Vui lòng chọn thẻ'
   return errors
 }
 

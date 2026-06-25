@@ -7,11 +7,12 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { adminVocabApi } from '@/apis/admin'
 import { useVocabTags } from '@/contexts/admin/VocabTagsContext'
 import { toast } from 'react-toastify'
-import { ImageIcon, Loader2 } from 'lucide-react'
+import { ArrowBigDownDash, ImageIcon, Loader2, SquarePen, Trash2 } from 'lucide-react'
 import { VocabModal } from '@/components/admin/VocabModal'
 import { Button } from '@/components/ui/button'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSearchParams } from 'react-router-dom'
+import { formatVietnamDateTime } from '@/utils/formatVietnamDateTime';
 
 export function VocabManagePage() {
   const { state: { tags }, fetchTags } = useVocabTags()
@@ -158,7 +159,7 @@ export function VocabManagePage() {
           <table className="w-full">
             <thead className="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
               <tr>
-                {['STT', 'Hình ảnh', 'Từ vựng', 'Phiên âm', 'Nghĩa', 'Danh mục', 'Thao tác'].map(h => (
+                {['STT', 'Hình ảnh', 'Từ vựng', 'Phiên âm', 'Ý nghĩa', 'Tên thẻ', 'Cập nhật lần cuối', 'Thao tác'].map(h => (
                   <th key={h} className="px-5 py-3 text-left">{h}</th>
                 ))}
               </tr>
@@ -197,10 +198,11 @@ export function VocabManagePage() {
                       <span className="text-gray-400 text-xs italic">Không có thẻ</span>
                     )}
                   </td>
+                  <td className="px-5 py-4 text-sm text-gray-700">{formatVietnamDateTime(v.updatedAt)}</td>
                   <td className="px-5 py-4">
                     <div className="flex gap-2">
-                      <button onClick={() => setModal(v)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">✏️</button>
-                      <button onClick={() => setDeleteId(v.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-sm">🗑️</button>
+                      <button onClick={() => setModal(v)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4"/></button>
+                      <button onClick={() => setDeleteId(v.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4"/></button>
                     </div>
                   </td>
                 </tr>
@@ -219,7 +221,14 @@ export function VocabManagePage() {
               className="rounded-full px-6"
             >
               {isFetchingMore ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              {isFetchingMore ? 'Đang tải...' : '⬇️ Tải thêm từ vựng'}
+              {isFetchingMore ? 
+              ('Đang tải...') : 
+              (
+                <>
+                  <ArrowBigDownDash /> 
+                  {' '}Tải thêm từ vựng
+                </>
+              )}
             </Button>
           </div>
         )}

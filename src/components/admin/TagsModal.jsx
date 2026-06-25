@@ -47,14 +47,14 @@ export function TagsModal({ open, item, onClose, onSave, isSaving }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{item?.id ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}</DialogTitle>
+          <DialogTitle>{item?.id ? 'Chỉnh sửa thẻ' : 'Thêm thẻ mới'}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
           
           {/* Ô Input Tên các thẻ */}
           <div>
-            <Label htmlFor="name">Tên các thẻ</Label>
+            <Label htmlFor="name">Tên các thẻ <span className="text-red-500">*</span></Label>
             <Input 
               id="name"
               className={`mt-1 ${errors.name ? 'border-red-500 bg-red-50' : ''}`} 
