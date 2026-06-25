@@ -1,21 +1,22 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/PageHeader'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { TagsModal } from '@/components/admin/TagsModal'
-import { useVocabTags } from '@/contexts/admin/VocabTagsContext'
-import { vocabTagsApi } from '@/apis/admin'
+import { SearchBar } from '@/components/SearchBar'
+import { Button } from '@/components/ui/button'
+import { useQuoteTags } from '@/contexts/admin/QuoteTagsContext'
+import { quoteTagsApi } from '@/apis/admin'
+import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from 'react-toastify'
 import { Loader2, SquarePen, Trash2 } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
-import { useDebounce } from '@/hooks/useDebounce'
-import { Button } from '@/components/ui/button'
-import { SearchBar } from '@/components'
 import { formatVietnamDateTime } from '@/utils/formatVietnamDateTime'
 
-export function VoCabTagsManagePage() {
-  const { fetchTags: refreshContextTags } = useVocabTags()
+export function QuoteTagsManagePage() {
+  // Hàm này để cập nhật lại Context sau khi Thêm/Sửa/Xóa thành công
+  const { fetchTags: refreshContextTags } = useQuoteTags()
   
   const [searchParams, setSearchParams] = useSearchParams()
   const urlKeyword = searchParams.get('keyword') || ''
@@ -23,19 +24,20 @@ export function VoCabTagsManagePage() {
   const [inputValue, setInputValue] = useState(urlKeyword)
   const debouncedKeyword = useDebounce(inputValue, 500)
 
+  // --- LOCAL STATE CHO BẢNG ---
   const [tags, setTags] = useState([])
   const [nextCursor, setNextCursor] = useState(null)
   const [hasMore, setHasMore] = useState(false)
   
   const [isLoading, setIsLoading] = useState(true)
   const [isFetchingMore, setIsFetchingMore] = useState(false)
-
+  
   const [modal, setModal] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
-  
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // --- HÀM TẢI DỮ LIỆU CHÍNH ---
   const fetchLocalTags = useCallback(async (cursorToFetch = null) => {
     try {
       if (cursorToFetch) setIsFetchingMore(true)
@@ -47,7 +49,7 @@ export function VoCabTagsManagePage() {
       }
       if (cursorToFetch) params.cursor = cursorToFetch
 
-      const response = await vocabTagsApi.getAll(params)
+      const response = await quoteTagsApi.getAll(params)
       const payload = response?.data?.data ? response.data : response
 
       if (cursorToFetch) {
@@ -67,6 +69,7 @@ export function VoCabTagsManagePage() {
     }
   }, [debouncedKeyword])
 
+  // --- EFFECT TÌM KIẾM ---
   useEffect(() => {
     const currentUrlKeyword = searchParams.get('keyword') || ''
     
@@ -86,33 +89,32 @@ export function VoCabTagsManagePage() {
   const handleSearchChange = (value) => {
     setInputValue(value)
   }
-  // useEffect(() => {
-  //   fetchTags() 
-  // }, [fetchTags])
 
+  // --- THÊM / SỬA / XÓA ---
   const handleSave = async (form) => {
     try {
       setIsSaving(true)
       const payload = {
         name: form.name,
         colorCode: form.colorCode,
-        type: 'VOCAB' 
+        type: 'QUOTE' // Bắt buộc set cứng type là QUOTE
       }
 
       if (modal?.id) {
-        await vocabTagsApi.update(modal.id, payload)
+        await quoteTagsApi.update(modal.id, payload)
         toast.success('Cập nhật thẻ thành công!')
       } else {
-        await vocabTagsApi.create(payload)
+        await quoteTagsApi.create(payload)
         toast.success('Thêm thẻ mới thành công!')
       }
       
       setModal(null)
       fetchLocalTags(null)
-      refreshContextTags()
+      refreshContextTags(true) // Cập nhật ngầm Context
+      
     } catch (error) {
+      console.log('Lỗi khi lưu thẻ: ', error)
       // toast.error(error.message || 'Lỗi khi lưu thẻ!')
-      console.log('Lỗi khi lưu thẻ! ', error.message )
     } finally {
       setIsSaving(false)
     }
@@ -121,23 +123,24 @@ export function VoCabTagsManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await vocabTagsApi.remove(deleteId)
+      await quoteTagsApi.remove(deleteId)
       toast.success('Đã xóa thẻ thành công!')
       setDeleteId(null)
       
       fetchLocalTags(null)
-      refreshContextTags()
+      refreshContextTags(true)
       
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi xóa thẻ!')
+      // toast.error(error.message || 'Lỗi khi xóa thẻ!')
+      console.log('Lỗi khi xóa thẻ: ', error)
     } finally {
       setIsDeleting(false)
     }
   }
   
-return (
+  return (
     <div>
-      <PageHeader title="Các thẻ từ vựng" action="Thêm thẻ" onAction={() => setModal({})} />
+      <PageHeader title="Các thẻ câu nói" action="Thêm thẻ" onAction={() => setModal({})} />
       
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden relative min-h-[300px]">
         {isLoading && (
@@ -148,7 +151,7 @@ return (
 
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <SearchBar 
-            placeholder="Tìm thẻ từ vựng..." 
+            placeholder="Tìm thẻ câu nói..." 
             value={inputValue} 
             onChange={handleSearchChange} 
           />

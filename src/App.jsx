@@ -8,7 +8,7 @@ import {
   LoginPage, RegisterPage, HomePage, VocabularyPage, QuotesPage, ProfilePage,
   AdminLoginPage, DashboardPage, VocabManagePage, QuoteManagePage,
   VoCabTagsManagePage, AdminManagePage, UserManagePage, RoleManagePage,
-  PermissionsPage, AdminProfilePage, AdminSettingsPage,
+  PermissionsPage, AdminProfilePage, AdminSettingsPage, QuoteTagsManagePage
 } from '@/pages'
 
 export default function App() {
@@ -57,6 +57,7 @@ export default function App() {
         <Route path="vocabulary"  element={<VocabManagePage />} />
         <Route path="quotes"      element={<QuoteManagePage />} />
         <Route path="vocab-tags"  element={<VoCabTagsManagePage />} />
+        <Route path="quote-tags"  element={<QuoteTagsManagePage />} />
         <Route path="admins"      element={<AdminManagePage />} />
         <Route path="users"       element={<UserManagePage />} />
         <Route path="roles"       element={<RoleManagePage />} />

@@ -47,5 +47,5 @@ export const MOCK_ROLES = [
   { id: '3', name: 'Moderator',       desc: 'Kiểm duyệt & hỗ trợ', users: 1 },
 ]
 
-export const MOCK_RESOURCES = ['Từ vựng', 'Câu nói', 'Danh mục', 'Admin', 'Người dùng', 'Nhóm quyền', 'Phân quyền']
+export const MOCK_RESOURCES = ['Từ vựng', 'Câu nói', 'Thẻ', 'Admin', 'Người dùng', 'Nhóm quyền', 'Phân quyền']
 export const MOCK_ACTIONS   = ['Xem', 'Tạo mới', 'Chỉnh sửa', 'Xóa']

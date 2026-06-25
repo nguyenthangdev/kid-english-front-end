@@ -59,7 +59,7 @@ export function AdminLoginPage() {
       <div className="bg-white rounded-2xl p-10 w-full max-w-md shadow-xl">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🛡️</div>
-          <div className="text-2xl font-extrabold text-violet-600">Admin Panel</div>
+          <div className="text-2xl font-extrabold text-violet-600">Trang Quản Trị</div>
           <p className="text-sm text-gray-500 mt-1">Đăng nhập quản trị</p>
         </div>
         

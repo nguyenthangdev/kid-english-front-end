@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -130,7 +131,7 @@ export function VocabModal({ open, item, tags, onClose, onSave, isSaving }) {
           {/* Khu vực Nhập text */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="word">Từ (tiếng Anh)</Label>
+              <Label htmlFor="word">Từ (tiếng Anh) <span className="text-red-500">*</span></Label>
               <Input 
                 id="word" 
                 className={`mt-1 ${errors.word ? 'border-red-500 focus-visible:ring-red-500' : ''}`} 
@@ -154,7 +155,7 @@ export function VocabModal({ open, item, tags, onClose, onSave, isSaving }) {
           </div>
 
           <div>
-            <Label htmlFor="meaning">Nghĩa (tiếng Việt)</Label>
+            <Label htmlFor="meaning">Nghĩa (tiếng Việt) <span className="text-red-500">*</span></Label>
             <Input 
               id="meaning" 
               className={`mt-1 ${errors.meaning ? 'border-red-500 focus-visible:ring-red-500' : ''}`} 
@@ -166,14 +167,14 @@ export function VocabModal({ open, item, tags, onClose, onSave, isSaving }) {
           </div>
 
           <div>
-            <Label>Danh mục</Label>
+            <Label>Thẻ chủ đề <span className="text-red-500">*</span></Label>
             <Controller
               name="tagId"
               control={control}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value} disabled={isProcessing || tags.length === 0}>
                   <SelectTrigger className={`mt-1 ${errors.tagId ? 'border-red-500 focus-visible:ring-red-500' : ''}`}>
-                    <SelectValue placeholder="Chọn danh mục" />
+                    <SelectValue placeholder="Chọn thẻ" />
                   </SelectTrigger>
                   <SelectContent>
                     {tags.map(t => (
@@ -187,7 +188,7 @@ export function VocabModal({ open, item, tags, onClose, onSave, isSaving }) {
                 </Select>
               )}
             />
-            {/* Hiển thị lỗi chưa chọn danh mục */}
+            {/* Hiển thị lỗi chưa chọn thẻ */}
             {errors.tagId && <p className="mt-1.5 text-sm text-red-500">{errors.tagId.message}</p>}
           </div>
 

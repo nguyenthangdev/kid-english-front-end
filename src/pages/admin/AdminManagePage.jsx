@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MOCK_ADMINS, MOCK_ROLES } from '@/utils/mockData'
+import { SquarePen, Trash2 } from 'lucide-react'
 
 function AdminModal({ open, item, onClose, onSave }) {
   const [form, setForm] = useState(item ?? { name: '', email: '', role: 'Moderator', status: 'active' })
@@ -83,9 +84,9 @@ export function AdminManagePage() {
                 <td className="px-5 py-4"><StatusBadge active={a.status === 'active'} /></td>
                 <td className="px-5 py-4">
                   <div className="flex gap-2">
-                    <button onClick={() => setModal(a)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-sm">✏️</button>
-                    <button onClick={() => setDeleteId(a.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-sm">🗑️</button>
-                  </div>
+                      <button onClick={() => setModal(a)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4"/></button>
+                      <button onClick={() => setDeleteId(a.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4"/></button>
+                    </div>
                 </td>
               </tr>
             ))}

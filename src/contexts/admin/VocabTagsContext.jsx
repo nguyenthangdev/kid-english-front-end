@@ -16,12 +16,11 @@ export function VocabTagsProvider({ children }) {
     dispatch({ type: 'FETCH_START' })
     try {
       const response = await vocabTagsApi.getAll()
-      console.log('response: ', response)
       const data = response.data
       dispatch({ type: 'FETCH_SUCCESS', payload: data })
     } catch (error) {
       dispatch({ type: 'FETCH_ERROR', payload: error.message })
-      toast.error(error.message || 'Lỗi khi tải danh sách danh mục')
+      toast.error(error.message || 'Lỗi khi tải danh sách thẻ')
     }
   }, [state.isFetched])
 
