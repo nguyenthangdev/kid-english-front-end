@@ -4,6 +4,8 @@ import { ClientProviders, AdminProviders } from './AppProviders'
 import { AdminLayout } from '@/layouts/AdminLayout'
 import PrivateRouteAdmin from '@/components/admin/PrivateRoute'
 import UnauthorizedRoutesAdmin from '@/components/admin/UnauthorizedRoutes'
+import PrivateRouteUser from '@/components/client/PrivateRoute'
+import UnauthorizedRoutesUser from '@/components/client/UnauthorizedRoutes'
 import {
   LoginPage, RegisterPage, HomePage, VocabularyPage, QuotesPage, ProfilePage,
   AdminLoginPage, DashboardPage, VocabManagePage, QuoteManagePage,
@@ -14,28 +16,35 @@ import {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      {/* ══════════════════════════════════════════════════════════════
+          CLIENT: Bọc 1 lần duy nhất bằng ClientProviders
+          → UserAuthProvider chỉ mount 1 lần, state chia sẻ giữa
+            UnauthorizedRoutesUser và PrivateRouteUser
+         ══════════════════════════════════════════════════════════════ */}
+      <Route element={<ClientProviders><Outlet /></ClientProviders>}>
+        {/* Trang auth (login/register) — redirect nếu đã đăng nhập */}
+        <Route element={<UnauthorizedRoutesUser />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+        </Route>
 
-      <Route path="/" element={
-        <ClientProviders>
-          <Outlet /> 
-        </ClientProviders>
-      }>
-        <Route path="home"       element={<HomePage />} />
-        <Route path="vocabulary" element={<VocabularyPage />} />
-        <Route path="quotes"     element={<QuotesPage />} />
-        <Route path="profile"    element={<ProfilePage />} /> 
+        {/* Trang yêu cầu đăng nhập */}
+        <Route element={
+          <PrivateRouteUser>
+            <Outlet />
+          </PrivateRouteUser>
+        }>
+          <Route path="/" element={<HomePage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="vocabulary" element={<VocabularyPage />} />
+          <Route path="quotes" element={<QuotesPage />} />
+        </Route>
       </Route>
 
-      <Route path="/" element={
-        <ClientProviders>
-          <Outlet />
-        </ClientProviders>
-      }>
-        <Route path="login"    element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-      </Route>
-
+      {/* ══════════════════════════════════════════════════════════════
+          ADMIN: Giữ nguyên cấu trúc — AdminProviders bọc riêng
+         ══════════════════════════════════════════════════════════════ */}
+      {/* Trang auth (chỉ truy cập khi chưa đăng nhập) */}
       <Route path="/admin/auth" element={
         <AdminProviders>
           <UnauthorizedRoutesAdmin />
@@ -44,7 +53,7 @@ export default function App() {
         <Route path="login" element={<AdminLoginPage />} />
       </Route>
 
-
+      {/* Trang quản trị (yêu cầu đăng nhập admin) */}
       <Route path="/admin" element={
         <AdminProviders>
           <PrivateRouteAdmin>
@@ -62,8 +71,8 @@ export default function App() {
         <Route path="users"       element={<UserManagePage />} />
         <Route path="roles"       element={<RoleManagePage />} />
         <Route path="permissions" element={<PermissionsPage />} />
-        <Route path="profile"     element={<AdminProfilePage />} />
-        <Route path="settings"    element={<AdminSettingsPage />} />
+        <Route path="profile" element={<AdminProfilePage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
 
     </Routes>
