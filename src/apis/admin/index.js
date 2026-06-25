@@ -91,14 +91,17 @@ export const userAccountApi = {
   update:  (id, data) => request('PATCH', `/admin/users/${id}`, data),
 }
 
-export const roleApi = {
-  getAll:  ()         => request('GET',    '/admin/roles'),
-  create:  (data)     => request('POST',   '/admin/roles', data),
-  update:  (id, data) => request('PATCH',  `/admin/roles/${id}`, data),
-  remove:  (id)       => request('DELETE', `/admin/roles/${id}`),
+export const adminRoleApi = {
+  getAll: (params) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return requestAuthorized('GET', `/admin/roles${queryString}`);
+  },
+  create: (data) => requestAuthorized('POST', '/admin/roles', data),
+  update: (id, data) => requestAuthorized('PATCH', `/admin/roles/${id}`, data),
+  remove: (id) => requestAuthorized('DELETE', `/admin/roles/${id}`),
 }
 
 export const permissionApi = {
-  getMatrix: ()     => request('GET',  '/admin/permissions/matrix'),
-  save:      (data) => request('POST', '/admin/permissions/matrix', data),
+  getMatrix: ()     => requestAuthorized('GET',  '/admin/permissions/matrix'),
+  save:      (data) => requestAuthorized('POST', '/admin/permissions/matrix', data),
 }
