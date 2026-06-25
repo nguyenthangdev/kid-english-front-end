@@ -7,19 +7,19 @@ export function HomePage() {
   const todayQuote = quotes.find(q => q.isToday)
 
   const stats = [
-    { icon: '⭐', val: '3',   label: 'Sao' },
-    { icon: '📈', val: '0',   label: 'Ngày liên tiếp' },
+    { icon: '⭐', val: '3', label: 'Sao' },
+    { icon: '📈', val: '0', label: 'Ngày liên tiếp' },
     { icon: '📚', val: '0/0', label: 'Từ đã học' },
-    { icon: '🎁', val: '0',   label: 'Sticker' },
+    { icon: '🎁', val: '0', label: 'Sticker' },
   ]
 
   const explore = [
-    { icon: '📖', bg: 'bg-blue-100',    name: 'Từ vựng của Bé',   desc: 'Khám phá từ mới mỗi ngày',    to: '/vocabulary' },
-    { icon: '💬', bg: 'bg-pink-100',    name: 'Câu nói mỗi ngày', desc: 'Học qua những câu nói hay',   to: '/quotes' },
+    { icon: '📖', bg: 'bg-blue-100', name: 'Từ vựng của Bé', desc: 'Khám phá từ mới mỗi ngày', to: '/vocabulary' },
+    { icon: '💬', bg: 'bg-pink-100', name: 'Câu nói mỗi ngày', desc: 'Học qua những câu nói hay', to: '/quotes' },
     { icon: '🎮', bg: 'bg-emerald-100', name: 'Trò chơi học tập', desc: 'Vừa chơi vừa học tiếng Anh', to: '/game' },
-    { icon: '🎁', bg: 'bg-pink-100',    name: 'Sticker',          desc: 'Sưu tầm sticker đáng yêu',   to: '/sticker' },
-    { icon: '🏆', bg: 'bg-yellow-100',  name: 'Thành tích',       desc: 'Xem huy hiệu của bạn',       to: '/achievement' },
-    { icon: '👨‍👩‍👧', bg: 'bg-purple-100', name: 'Góc Phụ Huynh',   desc: 'Dành cho bố mẹ và thầy cô', to: '/parent' },
+    { icon: '🎁', bg: 'bg-pink-100', name: 'Sticker', desc: 'Sưu tầm sticker đáng yêu', to: '/sticker' },
+    { icon: '🏆', bg: 'bg-yellow-100', name: 'Thành tích', desc: 'Xem huy hiệu của bạn', to: '/achievement' },
+    { icon: '👨‍👩‍👧', bg: 'bg-purple-100', name: 'Góc Phụ Huynh', desc: 'Dành cho bố mẹ và thầy cô', to: '/parent' },
   ]
 
   return (
