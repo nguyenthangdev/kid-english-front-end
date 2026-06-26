@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer } from 'react'
 import { quoteReducer } from '@/reducers/quoteReducer'
 import { MOCK_QUOTES } from '@/utils/mockData'

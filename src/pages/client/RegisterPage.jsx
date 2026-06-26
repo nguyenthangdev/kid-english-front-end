@@ -7,13 +7,11 @@ import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useUserAuth } from '@/contexts/UserAuthContext'
-import { authUserApi } from '@/apis/index'
-import { userRegisterSchema } from '@/validations/user/auth.validation'
+import { authUserApi } from '@/apis/client/index'
+import { userRegisterSchema } from '@/validations/client/auth.validation'
 
 export function RegisterPage() {
   const navigate = useNavigate()
-  const { login } = useUserAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -25,17 +23,21 @@ export function RegisterPage() {
       confirmPassword: '',
     },
   })
+  // eslint-disable-next-line no-unused-vars
   const onSubmit = async ({ confirmPassword, ...rest }) => {
     setIsLoading(true)
     try {
       const response = await authUserApi.register(rest)
-      // Tự động đăng nhập sau khi đăng ký thành công
-      const userData = response?.user ?? response?.data?.user
-      // if (userData) login(userData)
-      toast.success(response?.message || 'Tạo tài khoản thành công! 🎉')
-      navigate('/login')
-    } catch {
+      console.log('response register: ', response)
+      if (response.code === 201) {
+        toast.success(response?.message || 'Tạo tài khoản thành công! 🎉')
+        navigate('/login')
+      } else {
+        toast.error(response?.message || 'Tạo tài khoản thành công! 🎉')
+      }
+    } catch(error) {
       // Lỗi đã được toast bởi Axios interceptor
+      console.log('error: ', error)
     } finally {
       setIsLoading(false)
     }

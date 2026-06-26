@@ -2,7 +2,9 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
 import { toast } from 'react-toastify'
-import { Bell, Book, Building, ChevronDown, Key, LayoutDashboard, LogOut, MessageSquareText, Settings, ShieldUser, Tag, TagPlus, User, UserPen, UsersRound } from 'lucide-react'
+import { Bell, ChevronDown, LogOut, Settings, User, Book, Building, Key, LayoutDashboard, MessageSquareText, ShieldUser, Tag, TagPlus, UserPen, UsersRound } from 'lucide-react'
+import { TITLES } from '@/utils'
+
 const NAV = [
   { group: 'Tổng quan', items: [
     { to: '/admin/dashboard',   icon: <LayoutDashboard />, label: 'Tổng quan' },
@@ -27,23 +29,11 @@ const NAV = [
   ]},
 ]
 
-const TITLES = {
-  '/admin/dashboard':   '📊 Tổng quan',
-  '/admin/vocabulary':  '📖 Từ vựng của bé',
-  '/admin/quotes':      '💬 Câu nói mỗi ngày',
-  '/admin/categories':  '🏷️ Các thẻ từ vựng',
-  '/admin/admins':      '🛡️ Tài khoản Admin',
-  '/admin/users':       '👥 Người dùng',
-  '/admin/roles':       '🔑 Nhóm quyền',
-  '/admin/permissions': '📋 Ma trận phân quyền',
-  '/admin/profile':     '👤 Hồ sơ của tôi',
-  '/admin/settings':    '⚙️ Cài đặt',
-}
-
 export function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { admin, logout } = useAdminAuth()
+
   const handleLogout = async () => {
     const response = await logout()
     toast.success(response?.message || 'Đăng xuất thành công!')

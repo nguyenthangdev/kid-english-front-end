@@ -27,3 +27,17 @@ export const COLOR_VARIANTS = {
   purple: 'bg-purple-100 text-purple-700',
   orange: 'bg-orange-100 text-orange-700',
 }
+
+
+export const TITLES = {
+  '/admin/dashboard':   '📊 Tổng quan',
+  '/admin/vocabulary':  '📖 Từ vựng của bé',
+  '/admin/quotes':      '💬 Câu nói mỗi ngày',
+  '/admin/categories':  '🏷️ Các thẻ từ vựng',
+  '/admin/admins':      '🛡️ Tài khoản Admin',
+  '/admin/users':       '👥 Người dùng',
+  '/admin/roles':       '🔑 Nhóm quyền',
+  '/admin/permissions': '📋 Ma trận phân quyền',
+  '/admin/profile':     '👤 Hồ sơ của tôi',
+  '/admin/settings':    '⚙️ Cài đặt',
+}

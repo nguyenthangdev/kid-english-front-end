@@ -2,7 +2,7 @@
 import { createContext, useReducer, useContext, useCallback } from 'react'
 import { vocabTagsApi } from '@/apis/admin/index'
 import { toast } from 'react-toastify'
-import { adminVocabTagsReducer, initialState } from '@/reducers/admin'
+import { adminVocabTagsReducer, initialState } from '@/reducers/admin/adminVocabTagsReducer'
 
 const VocabTagsContext = createContext()
 

@@ -7,9 +7,9 @@ import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useUserAuth } from '@/contexts/UserAuthContext'
-import { authUserApi } from '@/apis/index'
-import { userLoginSchema } from '@/validations/user/auth.validation'
+import { useUserAuth } from '@/contexts/client/UserAuthContext'
+import { authUserApi } from '@/apis/client/index'
+import { userLoginSchema } from '@/validations/client/auth.validation'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -35,8 +35,12 @@ export function LoginPage() {
         toast.error(response?.message || 'Đăng nhập thất bại! ❌')
       }
     } catch (error) {
+      console.log('error', error.response)
+
       // Lỗi đã được toast bởi Axios interceptor
-      console.log('error', error)
+      // if (error.response?.status === 409) {
+      //   toast.error(error.response.message)
+      // }
     } finally {
       setIsLoading(false)
     }

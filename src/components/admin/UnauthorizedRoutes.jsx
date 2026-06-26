@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
 import { Loader2 } from 'lucide-react' 
+
 const UnauthorizedRoutesAdmin = () => {
   const { isAuthenticated, isLoading, authChecked } = useAdminAuth()
 

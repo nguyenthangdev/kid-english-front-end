@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
-import { authUserApi } from '@/apis/index'
+import { authUserApi } from '@/apis/client/index'
 import { Loader2 } from 'lucide-react'
 
 const UserAuthContext = createContext(undefined)
@@ -22,6 +22,7 @@ export const UserAuthProvider = ({ children }) => {
         setUser(null)
       }
     } catch (error) {
+      console.log('error: ', error)
       setUser(null)
     } finally {
       setAuthChecked(true)

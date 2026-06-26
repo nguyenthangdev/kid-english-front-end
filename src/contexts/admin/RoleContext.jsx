@@ -2,7 +2,7 @@
 import { createContext, useReducer, useContext, useCallback } from 'react'
 import { adminRoleApi } from '@/apis/admin/index'
 // import { toast } from 'react-toastify'
-import { adminRoleReducer, roleInitialState } from '@/reducers/admin'
+import { adminRoleReducer, roleInitialState } from '@/reducers/admin/adminRoleReducer'
 
 const RoleContext = createContext()
 

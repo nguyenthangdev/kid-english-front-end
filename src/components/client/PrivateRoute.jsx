@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import { useUserAuth } from '@/contexts/UserAuthContext'
+import { useUserAuth } from '@/contexts/client/UserAuthContext'
 import { Loader2 } from 'lucide-react'
 
 /**
