@@ -108,3 +108,8 @@ export const adminPermissionApi = {
   // URL của POST thì giữ nguyên vì backend đang dùng @Post('matrix')
   saveMatrix: (data) => requestAuthorized('POST', '/admin/permissions/matrix', data),
 }
+
+export const adminDashboardApi = {
+  getStats:          () => requestAuthorized('GET', '/admin/dashboard/stats'),
+  getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
+}

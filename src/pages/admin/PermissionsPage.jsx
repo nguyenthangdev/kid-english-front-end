@@ -90,6 +90,9 @@ export function PermissionsPage() {
     return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-violet-500 w-8 h-8" /></div>
   }
 
+  // Roles dùng để render cột — ưu tiên roles từ context (API thật)
+  const displayRoles = roles.length > 0 ? roles : []
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -150,6 +153,12 @@ export function PermissionsPage() {
               ))}
             </tbody>
           </table>
+
+          {displayRoles.length === 0 && !rolesLoading && (
+            <div className="py-10 text-center text-gray-400 text-sm">
+              Chưa có nhóm quyền nào. Hãy tạo Role trước.
+            </div>
+          )}
         </div>
       </div>
     </div>

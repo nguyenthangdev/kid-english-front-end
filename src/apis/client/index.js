@@ -23,13 +23,22 @@ const requestAuthorizedClient = async (method, path, data) => {
 }
 
 export const vocabApi = {
-  getAll: () => request('GET', '/vocabs'),
-  getOne: (id) => request('GET', `/vocabs/${id}`),
+  getAll: (params) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : ''
+    return request('GET', `/vocabularies${queryString}`)
+  },
+  getOne: (id) => request('GET', `/vocabularies/${id}`),
+  getAllTags: () => request('GET', '/admin/tags?type=VOCAB'), // Lấy danh sách tags dùng filter category
 }
 
 export const quoteApi = {
-  getAll: () => request('GET', '/quotes'),
+  getAll: (params) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : ''
+    return request('GET', `/quotes${queryString}`)
+  },
   getOne: (id) => request('GET', `/quotes/${id}`),
+  getToday: () => request('GET', '/quotes/today'),     // Câu nói hôm nay
+  getAllTags: () => request('GET', '/admin/tags?type=QUOTE'),      // Danh sách tags để filter
 }
 
 export const authUserApi = {
