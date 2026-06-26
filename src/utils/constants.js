@@ -41,3 +41,18 @@ export const TITLES = {
   '/admin/profile':     '👤 Hồ sơ của tôi',
   '/admin/settings':    '⚙️ Cài đặt',
 }
+
+export const MODULE_NAMES = {
+    VOCABULARY: 'Từ vựng của bé',
+    QUOTE: 'Câu nói mỗi ngày',
+    USER: 'Tài khoản người dùng',
+    ROLE: 'Nhóm quyền & Phân quyền',
+    // Sau này có thêm module mới, chỉ cần khai báo thêm tên đẹp ở đây
+  }
+
+export const ACTION_NAMES = {
+    CREATE: 'Thêm mới',
+    READ: 'Xem danh sách',
+    UPDATE: 'Chỉnh sửa',
+    DELETE: 'Xóa',
+  }
