@@ -4,15 +4,12 @@ import { composeProviders } from './composeProviders'
 import { VocabTagsProvider } from '@/contexts/admin/VocabTagsContext'
 import { QuoteTagsProvider } from '@/contexts/admin/QuoteTagsContext'
 import { RoleProvider } from '@/contexts/admin/RoleContext'
-import { VocabProvider } from '@/contexts/VocabContext'
-import { QuoteProvider } from '@/contexts/QuoteContext'
-import { CategoryProvider } from '@/contexts/CategoryContext'
 
-export const GlobalProviders = composeProviders(
-  VocabProvider,
-  QuoteProvider,
-  CategoryProvider
-)
+// -- CONTEXT CŨ: đã được thay thế bằng API calls trực tiếp trong từng page --
+// import { VocabProvider }    from '@/contexts/VocabContext'
+// import { QuoteProvider }    from '@/contexts/QuoteContext'
+// import { CategoryProvider } from '@/contexts/CategoryContext'
+// GlobalProviders không còn cần thiết — client pages tự fetch data qua API
 
 export const ClientProviders = composeProviders(
   UserAuthProvider

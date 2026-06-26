@@ -1,139 +1,398 @@
-# 🛡️ KidEnglish Frontend - Báo Cáo Kiến Trúc & Kỹ Thuật Sản Phẩm (Senior-Level Production Ready)
+# 🛡️ KidEnglish Frontend - Hướng Dẫn Kiến Trúc & Hành Động (Senior-Level Production Ready)
 
-Tài liệu này tổng hợp toàn bộ kiến trúc, giải pháp kỹ thuật và các điểm sáng tối ưu hóa hiệu năng (performance), bảo mật (security), và tổ chức mã nguồn (architecture) của dự án **KidEnglish Frontend** theo tiêu chuẩn **Senior Developer**.
+Tài liệu này là **nguồn sự thật duy nhất (Single Source of Truth)** cho AI Assistant về kiến trúc, trạng thái hiện tại, công việc còn lại, và quy ước code của dự án **KidEnglish Frontend**.
 
 ---
 
 ## 1. Sơ đồ Cấu trúc Thư mục (Directory Structure)
 
-Thư mục `src` được thiết kế theo mô hình **Separation of Concerns (SoC)**, giúp chia tách rõ ràng giữa giao diện hiển thị (Presentation), xử lý logic nghiệp vụ (Business Logic), cấu hình (Configuration), và tích hợp API (Data Access).
-
 ```text
 src/
-├── apis/               # Định nghĩa các cuộc gọi API (Axios Instance, Services)
-├── assets/             # Tài nguyên tĩnh (Hình ảnh, Biểu tượng, Fonts)
-├── components/         # Các Component dùng chung (UI Primitives & Shared Components)
-│   ├── admin/          # Route Guards & components bảo vệ tầng quản trị
-│   └── ui/             # Shadcn/ui core components (Button, Input, Dialog, Table,...)
-├── composeProviders.jsx# Hàm tiện ích gộp Context Providers để tránh Provider Hell
-├── AppProviders.jsx    # Định nghĩa các nhóm Provider (Global, Client, Admin)
-├── contexts/           # Quản lý State toàn cục bằng React Context API
-│   ├── admin/          # Context phục vụ riêng cho Admin (Authentication, Authorization)
-│   └── ...             # Contexts nghiệp vụ (Vocab, Quote, Category)
-├── helpers/            # Các hàm helper định dạng dữ liệu (date, string, format...)
-├── hooks/              # Custom Hooks tái sử dụng (useSearch, usePagination,...)
-├── layouts/            # Giao diện khung chuẩn (AdminLayout, ClientLayout)
-├── lib/                # Cấu hình các thư viện bên thứ ba (Utils, Axios configuration)
-├── pages/              # Các trang chính chia theo phân hệ Admin và Client
-│   ├── admin/          # Quản trị (Dashboard, Vocab, Quotes, Permissions, Roles, Users)
-│   └── client/         # Phân hệ dành cho trẻ em/người dùng (Home, Vocab, Quotes, Profile)
-├── reducers/           # Xử lý State phức tạp thông qua mô hình useReducer
-├── utils/              # Các hằng số, giả lập dữ liệu, hàm tiện ích (cn, constants,...)
-├── validations/        # Định nghĩa các Zod Validation Schema cho Forms
-├── App.jsx             # Cấu hình Routing chính sử dụng React Router v7
-└── main.jsx            # Điểm khởi chạy ứng dụng (Entry Point)
+├── apis/
+│   ├── admin/index.js       # adminVocabApi, adminQuoteApi, vocabTagsApi, quoteTagsApi,
+│   │                        # adminAuthApi, adminAccountApi, userAccountApi, adminRoleApi, permissionApi
+│   └── client/index.js      # vocabApi, quoteApi, authUserApi
+├── assets/
+├── components/
+│   ├── admin/
+│   │   ├── PrivateRoute.jsx      # Route guard cho admin (kiểm tra AdminAuthContext)
+│   │   ├── UnauthorizedRoutes.jsx# Redirect admin đã login khỏi /admin/auth/login
+│   │   ├── VocabModal.jsx        # Modal thêm/sửa từ vựng (có upload ảnh)
+│   │   ├── QuoteModal.jsx        # Modal thêm/sửa câu nói
+│   │   ├── TagsModal.jsx         # Modal thêm/sửa thẻ (dùng chung VocabTags & QuoteTags)
+│   │   └── RoleModal.jsx         # Modal thêm/sửa nhóm quyền
+│   ├── client/
+│   │   ├── PrivateRoute.jsx      # Route guard cho user (kiểm tra UserAuthContext)
+│   │   └── UnauthorizedRoutes.jsx# Redirect user đã login khỏi /login, /register
+│   ├── ui/                       # Shadcn/ui components (Button, Input, Dialog, Label,...)
+│   ├── CategoryBadge.jsx
+│   ├── ConfirmDialog.jsx
+│   ├── PageHeader.jsx
+│   ├── Pagination.jsx
+│   ├── SearchBar.jsx
+│   └── StatusBadge.jsx
+├── composeProviders.jsx      # Utility: gộp Context Providers tránh Provider Hell
+├── AppProviders.jsx          # GlobalProviders, ClientProviders, AdminProviders
+├── contexts/
+│   ├── admin/
+│   │   ├── AdminAuthContext.jsx  # State đăng nhập admin (accountAdmin, role, isLoading, authChecked)
+│   │   ├── VocabTagsContext.jsx  # State & fetch tags loại VOCAB
+│   │   ├── QuoteTagsContext.jsx  # State & fetch tags loại QUOTE
+│   │   └── RoleContext.jsx       # State & fetch danh sách roles
+│   ├── client/
+│   │   └── UserAuthContext.jsx   # State đăng nhập user (user, isLoading, authChecked)
+│   ├── VocabContext.jsx          # ⚠️ MOCK DATA - Cần chuyển sang gọi vocabApi
+│   ├── QuoteContext.jsx          # ⚠️ MOCK DATA - Cần chuyển sang gọi quoteApi
+│   ├── CategoryContext.jsx       # ⚠️ MOCK DATA - Cần chuyển sang gọi categoryApi (chưa có)
+│   └── index.js
+├── helpers/
+├── hooks/
+│   ├── useSearch.js         # Tìm kiếm client-side với useMemo
+│   ├── usePagination.js     # Phân trang client-side
+│   └── useDebounce.js       # Debounce input (dùng trong VocabManagePage)
+├── layouts/
+│   ├── AdminLayout.jsx
+│   └── ClientLayout.jsx
+├── lib/
+├── pages/
+│   ├── admin/
+│   │   ├── AdminLoginPage.jsx       # ✅ Kết nối API (adminAuthApi.loginAdmin)
+│   │   ├── AdminProfilePage.jsx     # ✅ Kết nối API (adminAuthApi.me, updateMe, uploadAvatar)
+│   │   ├── AdminSettingsPage.jsx    # ✅ Kết nối API (adminAuthApi.changePassword)
+│   │   ├── VocabManagePage.jsx      # ✅ Kết nối API (adminVocabApi) - Cursor Pagination + Debounce
+│   │   ├── QuoteManagePage.jsx      # ✅ Kết nối API (adminQuoteApi) - Cursor Pagination + Debounce
+│   │   ├── VoCabTagsManagePage.jsx  # ✅ Kết nối API (vocabTagsApi)
+│   │   ├── QuoteTagsManagePage.jsx  # ✅ Kết nối API (quoteTagsApi)
+│   │   ├── RoleManagePage.jsx       # ✅ Kết nối API (adminRoleApi)
+│   │   ├── AdminManagePage.jsx      # ⚠️ MOCK DATA - Cần kết nối adminAccountApi
+│   │   ├── UserManagePage.jsx       # ⚠️ MOCK DATA - Cần kết nối userAccountApi
+│   │   ├── DashboardPage.jsx        # ⚠️ MOCK DATA - Cần kết nối dashboardApi (thống kê thật)
+│   │   └── PermissionsPage.jsx      # ⚠️ MOCK DATA - handleSave chưa gọi permissionApi.save
+│   └── client/
+│       ├── LoginPage.jsx            # ✅ Kết nối API (authUserApi.login)
+│       ├── RegisterPage.jsx         # ✅ Kết nối API (authUserApi.register)
+│       ├── ProfilePage.jsx          # ⚠️ Commented out - Cần kết nối UserAuthContext + authUserApi.updateMe
+│       ├── HomePage.jsx             # ⚠️ MOCK DATA - Stats hardcode, dùng QuoteContext (mock)
+│       ├── VocabularyPage.jsx       # ⚠️ MOCK DATA - Dùng VocabContext (mock), cần gọi vocabApi
+│       └── QuotesPage.jsx           # ⚠️ MOCK DATA - Dùng QuoteContext (mock), cần gọi quoteApi
+├── reducers/                # vocabReducer, quoteReducer, categoryReducer (dùng với MOCK DATA)
+├── utils/
+│   ├── authorizedAxiosAdmin.js  # Axios instance Admin (Bearer token + silent refresh + force-logout)
+│   ├── authorizedAxiosClient.js # Axios instance Client (Bearer token + silent refresh + force-logout-user)
+│   ├── constants.js             # CATEGORY_COLORS, TAG_COLORS, ITEMS_PER_PAGE, API_ROOT
+│   ├── mockData.js              # ⚠️ Dữ liệu giả - xóa dần khi kết nối API xong
+│   ├── formatVietnamDateTime.js # Helper format ngày giờ theo múi giờ VN
+│   ├── cn.js                    # Utility: merge Tailwind classes (clsx + twMerge)
+│   └── index.js                 # Re-export API_ROOT
+├── validations/             # Zod schemas (adminLoginSchema, adminAvatarSchema,...)
+├── App.jsx                  # React Router v7 - routing toàn bộ app
+└── main.jsx                 # Entry point
 ```
 
 ---
 
-## 2. Điểm Sáng Kiến Trúc & Kỹ Thuật Tối Ưu (Senior-Level Engineering)
+## 2. Trạng Thái Hiện Tại & Công Việc Còn Lại
 
-### 2.1 Giải quyết Triệt để "Provider Hell" bằng Composable Providers
-Khi ứng dụng phình to, việc lồng quá nhiều Context Providers ở tầng root (`main.jsx`) sẽ tạo ra cấu trúc cây phân cấp sâu dạng "kim tự tháp" (Provider Hell), gây khó khăn cho việc bảo trì.
-*   **Giải pháp**: Sử dụng hàm `composeProviders` (`src/composeProviders.jsx`) tận dụng phương thức `reduceRight` để gộp các component Provider một cách động.
-*   **Chi tiết triển khai**:
-    ```javascript
-    export function composeProviders(...providers) {
-      return ({ children }) =>
-        providers.reduceRight(
-          (acc, Provider) => <Provider>{acc}</Provider>,
-          children
-        )
-    }
-    ```
-*   **Kết quả**: Tách biệt rõ ràng các nhóm quyền truy cập dữ liệu thành: `GlobalProviders`, `ClientProviders` và `AdminProviders`. Code ở `main.jsx` và `App.jsx` cực kỳ ngắn gọn, dễ đọc.
+### 2.1 Phân hệ Admin — Đã hoàn thiện ✅
 
-### 2.2 Dual-Auth Flow với Route Guards Cách Ly Tuyệt Đối
-Hệ thống hỗ trợ 2 phân hệ chạy song song: **Client (Người học)** và **Admin (Quản trị viên)**. Để tránh rò rỉ dữ liệu và tối ưu bảo mật, luồng xác thực được bảo vệ nghiêm ngặt:
-*   **PrivateRouteAdmin (`src/components/admin/PrivateRoute.jsx`)**: Chặn các truy cập trái phép vào trang quản trị khi chưa đăng nhập. Hiển thị Spinner tải dữ liệu mượt mà trong khi đang xác thực trạng thái (`authChecked` & `isLoading`).
-*   **UnauthorizedRoutesAdmin (`src/components/admin/UnauthorizedRoutes.jsx`)**: Tự động chuyển hướng Admin đã đăng nhập ra khỏi trang đăng nhập (`/admin/auth/login`) về trang Dashboard, ngăn ngừa việc đăng nhập lặp lại vô nghĩa.
-*   **Isolation**: Sử dụng context độc lập `AdminAuthContext` giúp phân hệ Admin không bị ảnh hưởng bởi token hay session của phân hệ Client.
+| Trang | Trạng thái | Ghi chú |
+|---|---|---|
+| `AdminLoginPage` | ✅ API | `adminAuthApi.loginAdmin` |
+| `AdminProfilePage` | ✅ API | `me`, `updateMe`, `uploadAvatar` |
+| `AdminSettingsPage` | ✅ API | `changePassword` |
+| `VocabManagePage` | ✅ API | Cursor pagination, debounce search, upload ảnh |
+| `QuoteManagePage` | ✅ API | Cursor pagination, debounce search |
+| `VoCabTagsManagePage` | ✅ API | `vocabTagsApi` CRUD |
+| `QuoteTagsManagePage` | ✅ API | `quoteTagsApi` CRUD |
+| `RoleManagePage` | ✅ API | `adminRoleApi` CRUD |
 
-### 2.3 Cơ chế Force Logout Khử Vòng Lặp Phụ Thuộc (Event-driven Decoupling)
-Một lỗi kiến trúc phổ biến là import trực tiếp React hooks/contexts hoặc gọi hàm điều hướng Router (như `navigate`) trực tiếp bên trong Axios Interceptors (file JS thuần). Điều này gây lỗi React Hook Warning hoặc tạo ra vòng lặp import chéo (Circular Dependency).
-*   **Giải pháp**: Sử dụng **Event Bus của Trình duyệt** (`window.dispatchEvent` kết hợp với `CustomEvent`).
-*   **Cơ chế**: Khi Axios phát hiện lỗi `401 Unauthorized` hoặc lỗi Token Refresh thất bại (`410 Gone`), nó sẽ bắn ra một sự kiện toàn cục `'force-logout'`:
-    ```javascript
-    const event = new CustomEvent('force-logout')
-    window.dispatchEvent(event)
-    ```
-*   **Phía React**: `AdminAuthContext` lắng nghe sự kiện này bằng `useEffect` để tự động reset state (`accountAdmin = null`, `role = null`) mà không cần can thiệp trực tiếp từ Axios vào React Component Tree.
+### 2.2 Phân hệ Admin — Cần hoàn thiện ⚠️
 
-### 2.4 Silent Token Refresh với Locking Promise
-Để tối ưu trải nghiệm người dùng (UX), ứng dụng sử dụng cơ chế JWT Access Token ngắn hạn kết hợp với HttpOnly Cookie Refresh Token.
-*   **Vấn đề**: Khi Access Token hết hạn, nếu Client gửi đồng thời nhiều API request (ví dụ: vừa tải danh sách từ vựng, vừa tải danh mục), tất cả các request này đều sẽ trả về lỗi hết hạn. Nếu không xử lý kỹ, hệ thống sẽ gửi liên tiếp nhiều request refresh token lên server, gây lãng phí tài nguyên và có thể làm mất hiệu lực token (token reuse detection trên backend).
-*   **Giải pháp**: Sử dụng cơ chế khóa **Single Promise Locking**:
-    ```javascript
-    let refreshTokenPromise = null;
-    
-    // Khi nhận mã lỗi 410 (Token Expired)
-    if (!refreshTokenPromise) {
-      refreshTokenPromise = refreshTokenAdmin()
-        .then((res) => res)
-        .catch(async (error) => {
-          await logoutAdmin().catch(() => {});
-          window.dispatchEvent(new CustomEvent('force-logout'));
-          return Promise.reject(error);
-        })
-        .finally(() => {
-          refreshTokenPromise = null; // Mở khóa khi hoàn thành
-        });
-    }
-    
-    // Các request bị lỗi sau đó sẽ xếp hàng đợi chung một Promise này
-    return refreshTokenPromise.then(() => {
-      return authorizedAxiosInstance(originalRequest); // Retry request ban đầu
-    });
-    ```
-*   **Hiệu quả**: Chỉ có duy nhất **1** request refresh token được gửi lên server. Tất cả các request gốc đang bị treo sẽ tự động thực hiện lại (Retry) ngay khi token mới được cấp thành công.
+#### `AdminManagePage.jsx` — Cần kết nối `adminAccountApi`
+- Hiện tại dùng `MOCK_ADMINS` (useState từ mockData)
+- **Việc cần làm**:
+  1. Bỏ import `MOCK_ADMINS`, thêm `useEffect` gọi `adminAccountApi.getAll()` để fetch danh sách
+  2. Kết nối nút "Thêm admin" → `adminAccountApi.create(form)`
+  3. Kết nối nút sửa → `adminAccountApi.update(id, form)` 
+  4. Kết nối nút xóa → `adminAccountApi.remove(id)`
+  5. Thêm `toast` thông báo thành công/thất bại
+  6. Khi save/delete xong → gọi lại `fetchAdmins()` để reload danh sách
 
-### 2.5 Dynamic Role-Permission Matrix (Quản lý Quyền Động)
-Hệ thống triển khai giao diện quản trị ma trận phân quyền (`PermissionsPage`) trực quan, ánh xạ trực tiếp các **Nhóm quyền (Roles)** với **Tài nguyên (Resources)** và **Hành động (Actions)**.
-*   Thiết lập phân quyền rõ ràng: `Super Admin` có toàn quyền, `Content Manager` có quyền quản lý nội dung (từ vựng, câu nói, danh mục) ngoại trừ xóa, và `Moderator` chỉ có quyền xem (Read-only).
-*   State được quản lý tập trung và chuẩn bị sẵn sàng để đồng bộ với API thông qua `permissionApi.save(matrix)`.
+#### `UserManagePage.jsx` — Cần kết nối `userAccountApi`
+- Hiện tại dùng `MOCK_USERS` (useState từ mockData)
+- **Việc cần làm**:
+  1. Bỏ import `MOCK_USERS`, thêm `useEffect` gọi `userAccountApi.getAll()` để fetch danh sách
+  2. Kết nối nút sửa → `userAccountApi.update(id, form)` (cập nhật status, tên, email)
+  3. Lưu ý: API `userAccountApi` chưa có endpoint xóa user, cân nhắc soft-delete
+  4. Thêm `toast` thông báo thành công/thất bại
 
----
+#### `DashboardPage.jsx` — Cần API thống kê thật
+- Hiện tại: stats lấy từ `.length` của context mock, "Hoạt động gần đây" là dữ liệu tĩnh
+- **Việc cần làm**:
+  1. Tạo `adminDashboardApi` trong `apis/admin/index.js`:
+     ```javascript
+     export const adminDashboardApi = {
+       getStats: () => requestAuthorized('GET', '/admin/dashboard/stats'),
+       getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
+     }
+     ```
+  2. Trong `DashboardPage`, dùng `useEffect` + `useState` để fetch và hiển thị dữ liệu thật
+  3. Thay thế placeholder biểu đồ bằng thư viện `recharts` hoặc `chart.js`
 
-## 3. Tối ưu Hóa Performance cho Môi trường Production
+#### `PermissionsPage.jsx` — Cần kết nối `permissionApi`
+- Hiện tại: ma trận build từ `MOCK_ROLES`, `handleSave` có TODO nhưng chưa gọi API
+- **Việc cần làm**:
+  1. Khi mount, gọi `permissionApi.getMatrix()` để load ma trận thật từ server
+  2. `handleSave` → gọi `permissionApi.save(matrix)` + `toast` thông báo
+  3. Thay `MOCK_ROLES` bằng data thật từ `RoleContext` hoặc `adminRoleApi.getAll()`
 
-### 3.1 React Compiler & Auto-Memoization (React 19 & Babel compiler plugin)
-*   Dự án đón đầu công nghệ tương lai của React bằng việc tích hợp **React Compiler** thông qua `@rolldown/plugin-babel` và `babel-plugin-react-compiler`.
-*   **Lợi ích**: Tự động phân tích code và tối ưu hóa việc ghi nhớ (memoize) các component và dependency arrays lúc biên dịch. Lập trình viên không cần viết `useMemo` hay `useCallback` một cách thủ công, loại bỏ boilerplate code thừa mà vẫn bảo đảm ứng dụng không bị re-render dư thừa (re-render storm).
+### 2.3 Phân hệ Client — Cần hoàn thiện ⚠️
 
-### 3.2 Tách biệt Logic Tìm kiếm & Phân trang thành Custom Hooks
-Hệ thống xây dựng 2 custom hooks đa năng giúp tách logic xử lý tính toán ra khỏi UI Components:
-*   `useSearch`: Nhận danh sách thô và mảng các field cần tìm kiếm, trả về state truy vấn và danh sách đã lọc bằng `useMemo`.
-*   `usePagination`: Chia nhỏ dữ liệu đã lọc thành từng trang dựa trên hằng số `ITEMS_PER_PAGE`. Tự động tính toán tổng số trang (`totalPages`) và cắt mảng mượt mà.
-*   **Kết quả**: UI Components như `VocabManagePage` chỉ tập trung vào việc render giao diện, toàn bộ logic tính toán tìm kiếm/phân trang đã được đóng gói và tái sử dụng dễ dàng cho các thực thể khác (Quotes, Users, Admins).
+#### `ProfilePage.jsx` — Cần kết nối `UserAuthContext`
+- Hiện tại: toàn bộ `useAuth` và header gradient bị comment out, form dùng hardcode value
+- **Việc cần làm**:
+  1. Uncomment import `useUserAuth` từ `@/contexts/client/UserAuthContext`
+  2. Bỏ comment phần UI gradient header và thay hardcode bằng data thật: `user.fullName`, `user.email`
+  3. Dùng `react-hook-form` + `zodResolver` với `profileSchema` cho form chỉnh sửa
+  4. Kết nối nút "Lưu thay đổi" → `authUserApi.updateMe(form)` → gọi `refreshUser()` từ context
 
-### 3.3 Form Validation Tối ưu Băng thông với Zod & React Hook Form
-*   Tích hợp `react-hook-form` giúp tối ưu hóa hiệu năng nhập liệu (uncontrolled inputs), giảm số lần re-render component khi gõ phím so với controlled inputs thông thường.
-*   Sử dụng `Zod` để thiết lập các schema kiểm chuẩn dữ liệu chặt chẽ ở Client-side.
-*   **Điểm sáng**: Tối ưu hóa upload file avatar (`adminAvatarSchema`): Kiểm tra định dạng (chỉ cho phép hình ảnh) và dung lượng file (tối đa 2MB) ngay lập tức ở trình duyệt. Điều này ngăn chặn việc tải các file rác hoặc quá dung lượng lên máy chủ, tiết kiệm tối đa băng thông mạng.
+#### `VocabularyPage.jsx` — Cần kết nối `vocabApi`
+- Hiện tại: dùng `useVocab()` → `VocabContext` (MOCK_VOCABS), `useCategory()` → `CategoryContext` (MOCK_CATEGORIES)
+- **Việc cần làm**:
+  1. Bỏ import VocabContext và CategoryContext
+  2. Dùng `useEffect` + `useState` để gọi `vocabApi.getAll()` và `vocabApi.getAllCategories()` (hoặc endpoint tương đương)
+  3. Thêm loading state (skeleton hoặc spinner)
+  4. Filter category ở client-side hoặc server-side tùy backend hỗ trợ
+  5. Cập nhật `vocabApi` trong `apis/client/index.js` nếu endpoint backend thay đổi
 
----
+#### `QuotesPage.jsx` — Cần kết nối `quoteApi`
+- Hiện tại: dùng `useQuote()` → `QuoteContext` (MOCK_QUOTES), filter `isToday` chỉ có ý nghĩa với mock data
+- **Việc cần làm**:
+  1. Bỏ import QuoteContext
+  2. Gọi `quoteApi.getAll()` để lấy danh sách câu nói
+  3. Lấy "câu nói hôm nay" từ endpoint riêng hoặc field `isToday` do backend trả về
+  4. Thay tag filter hardcode `['all', 'study', 'motivation', 'friendship']` bằng tag thật từ API
 
-## 4. UI/UX & Design System
-
-*   **Tailwind CSS v4**: Tận dụng engine mới nhất của Tailwind giúp biên dịch nhanh hơn, tích hợp trực tiếp vào Vite và giảm thiểu tối đa CSS bundle size.
-*   **Dynamic Theme & Badge Colors**: Thiết lập hệ thống hằng số màu sắc danh mục (`CATEGORY_COLORS`, `TAG_COLORS`) đồng bộ, giúp giao diện trực quan và thu hút trẻ em học tập (sử dụng các gam màu pastel nhẹ nhàng, kích thích thị giác).
-*   **Shadcn/ui & Radix UI Integration**: Đảm bảo toàn bộ hệ thống modal, select dropdown, tables và dialog tuân thủ tiêu chuẩn Accessibility (WAI-ARIA), hoạt động mượt mà trên mọi thiết bị và trình duyệt.
+#### `HomePage.jsx` — Cần kết nối dữ liệu thật
+- Hiện tại: stats hardcode (0/0), `todayQuote` lấy từ `QuoteContext` (mock)
+- **Việc cần làm**:
+  1. Gọi API lấy stats của user đang đăng nhập: số sao, streak, từ đã học, sticker
+  2. Gọi API lấy "câu nói hôm nay" riêng biệt
+  3. Dùng `useUserAuth()` để lấy thông tin user hiện tại nếu cần personalize
 
 ---
 
-## 5. Định Hướng Mở Rộng Hệ Thống (Next Steps for Production)
+## 3. Kiến Trúc Kỹ Thuật Nổi Bật
 
-Để dự án đạt độ chín chắn cao nhất (Elite Level), một số định hướng sau có thể được triển khai:
-1.  **Chuyển đổi hoàn toàn sang TypeScript**: Tận dụng các type định sẵn trong file `package.json` (`@types/react`, `@types/react-dom`, `@types/node`) để chuyển dịch mã nguồn sang `.tsx`, đảm bảo Type-safe tuyệt đối từ API DTOs đến Component Props.
-2.  **Tích hợp React Query / SWR**: Thay thế Axios thuần ở một số màn hình hiển thị danh sách để tận dụng cơ chế Client-side Caching, Auto-refetching khi window focus, và Optimistic Updates.
-3.  **Code Splitting / Lazy Loading**: Áp dụng `React.lazy` và `Suspense` cho các Page routes để chia nhỏ file JS bundle khi build production, giúp màn hình đăng nhập hoặc trang chủ của bé tải cực nhanh mà không cần tải trước code của trang Admin.
+### 3.1 Dual-Auth Flow — Cách Ly Tuyệt Đối
+Hai hệ thống auth chạy song song, **không chia sẻ token, context, hay axios instance**:
+
+| Phân hệ | Context | Axios Instance | Event Force-Logout |
+|---|---|---|---|
+| Admin | `AdminAuthContext` | `authorizedAxiosAdmin` | `force-logout` |
+| Client | `UserAuthContext` | `authorizedAxiosClient` | `force-logout-user` |
+
+- **`PrivateRouteAdmin`**: Chờ `authChecked && !isLoading` trước khi quyết định redirect
+- **`UnauthorizedRoutesAdmin`**: Redirect admin đã đăng nhập từ `/admin/auth/login` → `/admin/dashboard`
+- **`PrivateRouteUser`**: Tương tự cho client — chờ `authChecked` rồi kiểm tra `isAuthenticated`
+- **`UnauthorizedRoutesUser`**: Redirect user đã đăng nhập từ `/login`, `/register` → `/`
+
+### 3.2 Silent Token Refresh — Single Promise Locking
+Cả `authorizedAxiosAdmin` và `authorizedAxiosClient` đều triển khai cơ chế này:
+
+```javascript
+let refreshTokenPromise = null
+
+// Response interceptor: khi nhận lỗi 410 (token expired)
+if (error.response?.status === 410) {
+  if (!refreshTokenPromise) {
+    refreshTokenPromise = refreshTokenAdmin()
+      .catch(async (err) => {
+        await logoutAdmin().catch(() => {})
+        window.dispatchEvent(new CustomEvent('force-logout'))
+        return Promise.reject(err)
+      })
+      .finally(() => { refreshTokenPromise = null })
+  }
+  // Tất cả requests bị treo đều chờ chung 1 promise
+  return refreshTokenPromise.then(() => authorizedAxiosInstance(originalRequest))
+}
+```
+
+**Tại sao dùng 410 thay vì 401?**
+- `401` được dùng cho lỗi "sai credentials" khi login
+- `410 Gone` là signal rõ ràng "access token đã hết hạn, cần refresh" — tránh nhập nhằng
+
+### 3.3 Force Logout — Event-driven Decoupling
+Axios interceptor (file JS thuần) không thể import React hooks hay gọi `navigate()`.
+- **Giải pháp**: `window.dispatchEvent(new CustomEvent('force-logout'))` / `'force-logout-user'`
+- **React context lắng nghe**: `window.addEventListener('force-logout', handleForceLogout)` trong `useEffect`
+- Kết quả: **zero circular dependency**, code sạch hoàn toàn
+
+### 3.4 Cursor Pagination (Server-side) cho Admin
+`VocabManagePage` và `QuoteManagePage` dùng cursor-based pagination thay vì offset:
+
+```javascript
+const [nextCursor, setNextCursor] = useState(null)
+const [hasMore, setHasMore] = useState(false)
+
+// Load lần đầu hoặc khi search thay đổi: cursorToFetch = null
+// Tải thêm (Load More): cursorToFetch = nextCursor hiện tại
+const fetchVocabularies = useCallback(async (cursorToFetch = null) => {
+  const params = { limit: 10 }
+  if (debouncedKeyword) params.keyword = debouncedKeyword
+  if (cursorToFetch) params.cursor = cursorToFetch
+  const response = await adminVocabApi.getAll(params)
+  if (cursorToFetch) setVocabs(prev => [...prev, ...response.data])
+  else setVocabs(response.data)
+  setNextCursor(response.nextCursor)
+  setHasMore(response.hasMore)
+}, [debouncedKeyword])
+```
+
+**Ưu điểm**: Hiệu năng ổn định với dữ liệu lớn, tránh "phantom row" khi dữ liệu thay đổi giữa các trang.
+
+### 3.5 Debounce Search — URL Sync
+`VocabManagePage` đồng bộ keyword tìm kiếm vào URL (`?keyword=...`) để có thể bookmark và chia sẻ:
+
+```javascript
+const [inputValue, setInputValue] = useState(urlKeyword) // Hiển thị ngay
+const debouncedKeyword = useDebounce(inputValue, 500)    // Gọi API sau 500ms
+
+useEffect(() => {
+  // Đồng bộ URL
+  debouncedKeyword ? searchParams.set('keyword', debouncedKeyword) : searchParams.delete('keyword')
+  setSearchParams(searchParams)
+  fetchVocabularies(null) // Reset về trang đầu mỗi khi search thay đổi
+}, [debouncedKeyword])
+```
+
+### 3.6 Composable Providers — Chống Provider Hell
+```javascript
+// composeProviders.jsx
+export function composeProviders(...providers) {
+  return ({ children }) =>
+    providers.reduceRight(
+      (acc, Provider) => <Provider>{acc}</Provider>,
+      children
+    )
+}
+
+// AppProviders.jsx
+export const ClientProviders = composeProviders(UserAuthProvider, VocabProvider, QuoteProvider, CategoryProvider)
+export const AdminProviders  = composeProviders(AdminAuthProvider, VocabTagsProvider, QuoteTagsProvider, RoleProvider)
+```
+
+---
+
+## 4. Quy Ước Code & API
+
+### 4.1 Cấu trúc Response API (Backend trả về)
+
+```javascript
+// Danh sách thông thường (có phân trang offset)
+{ data: [...], total: 100, page: 1, limit: 10 }
+
+// Danh sách với cursor pagination (Vocab, Quote)
+{ data: [...], nextCursor: 'uuid-abc', hasMore: true }
+
+// Thao tác CRUD thành công
+{ message: 'Success', data: { ...item } }
+
+// Lỗi
+{ message: 'Error description', statusCode: 400 }
+```
+
+### 4.2 Pattern Chuẩn Khi Kết Nối API trong Page
+
+```javascript
+// Mẫu cho các page cần fetch danh sách + CRUD (AdminManagePage, UserManagePage,...)
+const [items, setItems] = useState([])
+const [isLoading, setIsLoading] = useState(true)
+const [isSaving, setIsSaving] = useState(false)
+const [isDeleting, setIsDeleting] = useState(false)
+
+const fetchItems = useCallback(async () => {
+  try {
+    setIsLoading(true)
+    const response = await someApi.getAll()
+    setItems(response?.data || [])
+  } catch (error) {
+    toast.error(error.message || 'Lỗi khi tải dữ liệu!')
+  } finally {
+    setIsLoading(false)
+  }
+}, [])
+
+useEffect(() => { fetchItems() }, [fetchItems])
+
+const handleSave = async (form) => {
+  try {
+    setIsSaving(true)
+    if (modal?.id) await someApi.update(modal.id, form)
+    else await someApi.create(form)
+    toast.success('Lưu thành công!')
+    setModal(null)
+    fetchItems()
+  } catch (error) {
+    toast.error(error.message || 'Lỗi khi lưu!')
+  } finally {
+    setIsSaving(false)
+  }
+}
+```
+
+### 4.3 Thêm API Mới
+
+Mọi API call mới đều phải đặt trong đúng file:
+- **Admin**: `src/apis/admin/index.js` — dùng `request` (public) hoặc `requestAuthorized` (cần auth)
+- **Client**: `src/apis/client/index.js` — dùng `request` hoặc `requestAuthorizedClient`
+
+```javascript
+// Ví dụ thêm adminDashboardApi vào src/apis/admin/index.js:
+export const adminDashboardApi = {
+  getStats:          () => requestAuthorized('GET', '/admin/dashboard/stats'),
+  getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
+}
+```
+
+---
+
+## 5. UI/UX & Design System
+
+- **Tailwind CSS v4**: Engine mới, biên dịch nhanh hơn, tích hợp trực tiếp vào Vite
+- **Shadcn/ui & Radix UI**: Toàn bộ modal, dialog, select, table — tuân thủ WAI-ARIA
+- **Color System**: `CATEGORY_COLORS` và `TAG_COLORS` trong `utils/constants.js`
+- **Toast Notifications**: `react-toastify` — dùng `toast.success()` / `toast.error()` nhất quán
+- **Loading States**:
+  - Spinner overlay (`<Loader2 className="animate-spin" />`) cho table đang tải
+  - `disabled={isSaving}` / `disabled={isDeleting}` cho buttons trong modal
+  - `ConfirmDialog` với `isLoading` prop cho xác nhận xóa
+
+---
+
+## 6. Thứ Tự Ưu Tiên Công Việc (Priority Roadmap)
+
+### 🔴 Cao — Ảnh hưởng trực tiếp đến UX người dùng
+1. **`ProfilePage` (Client)**: Kết nối `UserAuthContext` + `authUserApi.updateMe`
+2. **`VocabularyPage` (Client)**: Thay MOCK_VOCABS bằng `vocabApi.getAll()`
+3. **`QuotesPage` (Client)**: Thay MOCK_QUOTES bằng `quoteApi.getAll()`
+
+### 🟡 Trung — Ảnh hưởng đến chức năng Admin
+4. **`AdminManagePage`**: Kết nối `adminAccountApi` (CRUD admins)
+5. **`UserManagePage`**: Kết nối `userAccountApi` (fetch + update users)
+6. **`PermissionsPage`**: Kết nối `permissionApi.getMatrix()` + `permissionApi.save()`
+
+### 🟢 Thấp — Nice-to-have
+7. **`DashboardPage`**: API thống kê thật + thư viện biểu đồ (recharts)
+8. **`HomePage` (Client)**: API stats cá nhân user (streak, từ đã học, sao)
+9. **Xóa `mockData.js`**: Sau khi tất cả pages đã kết nối API thật
+
+---
+
+## 7. Định Hướng Kỹ Thuật Dài Hạn
+
+1. **TypeScript Migration**: Các type `@types/react`, `@types/react-dom`, `@types/node` đã có sẵn trong `package.json` — sẵn sàng chuyển sang `.tsx`
+2. **React Query / TanStack Query**: Thay thế pattern `useEffect + useState` cho data fetching — tự động caching, refetch on focus, optimistic updates
+3. **Code Splitting**: `React.lazy` + `Suspense` cho tất cả route pages — giảm initial bundle size
+4. **React Compiler (Babel Plugin)**: `babel-plugin-react-compiler` đã được tích hợp — auto-memoize, không cần `useMemo`/`useCallback` thủ công
