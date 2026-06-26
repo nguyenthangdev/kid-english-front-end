@@ -15,10 +15,8 @@ export function RoleProvider({ children }) {
 
     dispatch({ type: 'FETCH_START' })
     try {
-      // Lấy số lượng lớn để đủ hiển thị cho các màn hình có Dropdown chọn Quyền
       const response = await adminRoleApi.getAll()
       console.log('response: ', response)
-      // Bóc tách dữ liệu theo chuẩn phân trang Cursor ({ data, nextCursor, hasMore })
       const payload = response?.data
 
       dispatch({ type: 'FETCH_SUCCESS', payload: payload })

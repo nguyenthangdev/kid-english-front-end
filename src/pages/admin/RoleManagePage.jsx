@@ -72,12 +72,16 @@ export function RoleManagePage() {
     fetchRoles(null)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedKeyword, fetchRoles])
-
+  console.log('modal', modal)
   const handleSave = async (form) => {
     try {
       setIsSaving(true)
       if (modal?.id) {
-        const res = await adminRoleApi.update(modal.id, form)
+        const payload = {
+          ...form,
+          version: modal.version // Đây chính là "chìa khóa" để backend check đè dữ liệu!
+        }
+        const res = await adminRoleApi.update(modal.id, payload)
         console.log('res update: ', res)
         toast.success('Cập nhật quyền thành công!')
       } else {
@@ -98,7 +102,7 @@ export function RoleManagePage() {
     try {
       setIsDeleting(true)
       await adminRoleApi.remove(deleteId)
-      toast.success('Đã xóa quyền!')
+      toast.success('Đã xóa quyền thành công!')
       setDeleteId(null)
       fetchRoles(null) 
     } catch (error) {
@@ -118,7 +122,7 @@ export function RoleManagePage() {
           <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
             <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
           </div>
-        )}
+        )}  
 
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <SearchBar placeholder="Tìm theo tên, mã..." value={inputValue} onChange={setInputValue} />
@@ -129,7 +133,7 @@ export function RoleManagePage() {
           <table className="w-full">
             <thead className="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
               <tr>
-                {['STT', 'Mã Code', 'Tên nhóm', 'Mô tả', 'Thành viên', 'Cập nhật lần cuối', 'Thao tác'].map(h => <th key={h} className="px-5 py-3 text-left">{h}</th>)}
+                {['STT', 'Mã Code', 'Tên nhóm', 'Mô tả', 'Số lượng', 'Cập nhật lần cuối', 'Thao tác'].map(h => <th key={h} className="px-5 py-3 text-left">{h}</th>)}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

@@ -101,9 +101,12 @@ export const adminRoleApi = {
   remove: (id) => requestAuthorized('DELETE', `/admin/roles/${id}`),
 }
 
-export const permissionApi = {
-  getMatrix: ()     => requestAuthorized('GET',  '/admin/permissions/matrix'),
-  save:      (data) => requestAuthorized('POST', '/admin/permissions/matrix', data),
+export const adminPermissionApi = {
+  // Sửa đuôi URL và đổi tên hàm thành getAll cho chuẩn RESTful
+  getAll:     ()     => requestAuthorized('GET',  '/admin/permissions'),
+  
+  // URL của POST thì giữ nguyên vì backend đang dùng @Post('matrix')
+  saveMatrix: (data) => requestAuthorized('POST', '/admin/permissions/matrix', data),
 }
 
 export const adminDashboardApi = {
