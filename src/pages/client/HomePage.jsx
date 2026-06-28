@@ -1,31 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { quoteApi } from '@/apis/client/index'
-import { useUserAuth } from '@/contexts/client/UserAuthContext'
-
-// -- CONTEXT CŨ (giữ lại để rollback nhanh nếu cần) --
-// import { useQuote } from '@/contexts/QuoteContext'
-// const { quotes } = useQuote()
-// const todayQuote = quotes.find(q => q.isToday)
+import { userDashboardApi } from '@/apis/client/index'
 
 export function HomePage() {
   const navigate = useNavigate()
-  const { user } = useUserAuth()
 
-  const [todayQuote, setTodayQuote] = useState(null)
+  const [dashboardData, setDashboardData] = useState(null)
 
   useEffect(() => {
-    quoteApi.getToday()
-      .then(res => setTodayQuote(res?.data ?? res))
-      .catch(() => setTodayQuote(null)) // Không crash nếu endpoint chưa có
+    userDashboardApi.getDashboard()
+      .then(res => setDashboardData(res?.data ?? res))
+      .catch(console.error)
   }, [])
 
-  // Stats lấy từ user context (sẽ có khi backend trả về gamification data)
+  const { streak, statistics, vocabularyProgress, quoteOfDay } = dashboardData || {}
+
+  // Stats lấy từ API
   const stats = [
-    { icon: '⭐', val: user?.stars        ?? '0', label: 'Sao' },
-    { icon: '📈', val: user?.streak       ?? '0', label: 'Ngày liên tiếp' },
-    { icon: '📚', val: user?.wordsLearned ?? '0', label: 'Từ đã học' },
-    { icon: '🎁', val: user?.stickers     ?? '0', label: 'Sticker' },
+    { icon: '⭐', val: statistics?.totalStars ?? 0, label: 'Sao' },
+    { icon: '📈', val: streak?.currentStreak ?? 0, label: 'Ngày liên tiếp' },
+    { icon: '📚', val: `${vocabularyProgress?.mastered ?? 0}/${vocabularyProgress?.total ?? 0}`, label: 'Từ đã học' },
+    { icon: '🎁', val: '0', label: 'Sticker' }, // MOCK vì API chưa có stickers
   ]
 
   const explore = [
@@ -51,16 +46,16 @@ export function HomePage() {
       </div>
 
       {/* Câu nói hôm nay */}
-      {todayQuote && (
+      {quoteOfDay && (
         <div className="bg-white rounded-2xl border border-gray-200 border-l-4 border-l-emerald-500 p-6 mb-6">
-          <div className="text-xs font-bold text-yellow-500 mb-2">☀️ Câu nói mỗi ngày</div>
+          <div className="text-xs font-bold text-yellow-500 mb-2">✨ Câu nói mỗi ngày</div>
           <div className="text-lg font-bold text-gray-800 italic mb-1">
-            "{todayQuote.contentEn ?? todayQuote.text}"
+            "{quoteOfDay.contentEn}"
           </div>
           <div className="text-sm text-gray-500 mb-1">
-            {todayQuote.contentVn ?? todayQuote.trans}
+            {quoteOfDay.contentVn}
           </div>
-          <div className="text-sm font-bold text-gray-600">— {todayQuote.author}</div>
+          <div className="text-sm font-bold text-gray-600">— {quoteOfDay.author || 'Unknown'}</div>
         </div>
       )}
 

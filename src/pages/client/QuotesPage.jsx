@@ -83,6 +83,14 @@ export function QuotesPage() {
 
   return (
     <div>
+      {/* Page Header (Tùy chọn, giống thiết kế) */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-500">
+          <span className="text-lg">💬</span>
+        </div>
+        <h1 className="text-xl font-extrabold text-gray-800">Câu nói mỗi ngày</h1>
+      </div>
+
       {/* Câu nói hôm nay */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
@@ -91,26 +99,28 @@ export function QuotesPage() {
       ) : (
         <>
           {todayQuote && (
-            <div className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-2xl border border-gray-200 border-l-4 border-l-emerald-500 p-7 mb-6">
-              <div className="text-xs font-bold text-yellow-500 mb-3">☀️ Hôm nay</div>
-              <div className="text-xl font-bold text-gray-800 italic mb-2">
+            <div className="bg-emerald-50/30 rounded-3xl border-2 border-emerald-400 p-8 mb-10 relative overflow-hidden">
+              <div className="flex items-center gap-2 text-sm font-bold text-emerald-500 mb-4">
+                <span className="text-yellow-500 text-lg">🌟</span> Hôm nay
+              </div>
+              <div className="text-2xl font-bold text-gray-800 italic mb-2">
                 "{todayQuote.contentEn ?? todayQuote.text}"
               </div>
-              <div className="text-sm text-gray-500 mb-3">
+              <div className="text-base text-gray-500 mb-4">
                 {todayQuote.contentVn ?? todayQuote.trans}
               </div>
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-bold text-gray-600">— {todayQuote.author}</div>
-                <div className="flex gap-2">
-                  <CategoryBadge
-                    value={todayQuote.tag?.name ?? todayQuote.tag}
-                    color={todayQuote.tag?.colorCode}
-                    type="tag"
-                  />
-                  <button className="text-xs border border-gray-300 rounded-full px-3 py-1 font-bold text-gray-600 hover:bg-white transition-all">
-                    🔊 Nghe
-                  </button>
-                </div>
+              <div className="text-sm font-bold text-gray-800 mb-6">
+                — {todayQuote.author}
+              </div>
+              <div className="flex items-center gap-3">
+                <CategoryBadge
+                  value={todayQuote.tag?.name ?? todayQuote.tag}
+                  color={todayQuote.tag?.colorCode}
+                  type="tag"
+                />
+                <button className="flex items-center gap-2 text-xs border border-gray-300 bg-white rounded-full px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm">
+                  <span>🔊</span> Nghe
+                </button>
               </div>
             </div>
           )}
@@ -118,13 +128,16 @@ export function QuotesPage() {
           <h2 className="text-lg font-extrabold text-gray-800 mb-4">Thư viện câu nói</h2>
 
           {/* Search + Tag filter */}
-          <div className="flex gap-3 flex-wrap mb-5">
-            <SearchBar placeholder="Tìm câu nói..." value={query} onChange={setQuery} />
+          <div className="flex gap-3 flex-wrap items-center mb-6">
+            <div className="w-64">
+              <SearchBar placeholder="Tìm câu nói..." value={query} onChange={setQuery} />
+            </div>
+            
             <div className="flex gap-2 flex-wrap">
               {/* Nút "Tất cả" */}
               <button
                 onClick={() => setTag('all')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${tag === 'all' ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-400'}`}
+                className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${tag === 'all' ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-400 hover:bg-emerald-50'}`}
               >
                 Tất cả
               </button>
@@ -135,7 +148,7 @@ export function QuotesPage() {
                   <button
                     key={t.id ?? tagName}
                     onClick={() => setTag(tagName)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${tag === tagName ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-400'}`}
+                    className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${tag === tagName ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-400 hover:bg-emerald-50'}`}
                   >
                     {t.label ?? tagName}
                   </button>
@@ -153,15 +166,17 @@ export function QuotesPage() {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {filtered.map(q => (
-                <div key={q.id} className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-sm transition-all">
-                  <div className="text-sm font-bold text-gray-800 italic mb-2">
-                    "{q.contentEn ?? q.text}"
+                <div key={q.id} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer flex flex-col justify-between">
+                  <div>
+                    <div className="text-base font-extrabold text-gray-800 italic mb-2 leading-relaxed">
+                      "{q.contentEn ?? q.text}"
+                    </div>
+                    <div className="text-sm text-gray-500 mb-6">
+                      {q.contentVn ?? q.trans}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 mb-3">
-                    {q.contentVn ?? q.trans}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs font-bold text-gray-600">— {q.author}</div>
+                  <div className="flex items-center justify-between mt-auto">
+                    <div className="text-sm font-bold text-gray-600">— {q.author}</div>
                     <CategoryBadge
                       value={q.tag?.name ?? q.tag}
                       color={q.tag?.colorCode}

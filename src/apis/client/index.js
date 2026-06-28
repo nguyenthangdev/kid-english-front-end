@@ -28,7 +28,7 @@ export const vocabApi = {
     return request('GET', `/vocabularies${queryString}`)
   },
   getOne: (id) => request('GET', `/vocabularies/${id}`),
-  getAllTags: () => request('GET', '/admin/tags?type=VOCAB'), // Lấy danh sách tags dùng filter category
+  getAllTags: () => requestAuthorizedClient('GET', '/tags?type=VOCAB'), // Lấy danh sách tags dùng filter category
 }
 
 export const quoteApi = {
@@ -38,7 +38,7 @@ export const quoteApi = {
   },
   getOne: (id) => request('GET', `/quotes/${id}`),
   getToday: () => request('GET', '/quotes/today'),     // Câu nói hôm nay
-  getAllTags: () => request('GET', '/admin/tags?type=QUOTE'),      // Danh sách tags để filter
+  getAllTags: () => requestAuthorizedClient('GET', '/tags?type=QUOTE'),      // Danh sách tags để filter
 }
 
 export const authUserApi = {
@@ -52,3 +52,12 @@ export const authUserApi = {
   changePassword: (data) => requestAuthorizedClient('PATCH', '/user/auth/me/password', data),
   uploadAvatar: (data) => requestAuthorizedClient('POST', '/user/auth/me/avatar', data),
 }
+
+export const userDashboardApi = {
+  getDashboard: () => requestAuthorizedClient('GET', '/home/dashboard'),
+};
+
+export const progressApi = {
+  learnWord: (data) => requestAuthorizedClient('POST', '/home/progress/learn', data),
+  getMasteredIds: () => requestAuthorizedClient('GET', '/home/progress/mastered'),
+};
