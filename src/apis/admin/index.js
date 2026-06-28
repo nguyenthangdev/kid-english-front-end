@@ -110,6 +110,5 @@ export const adminPermissionApi = {
 }
 
 export const adminDashboardApi = {
-  getStats:          () => requestAuthorized('GET', '/admin/dashboard/stats'),
-  getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
+  getDashboard: () => requestAuthorized('GET', '/home/admin/dashboard'),
 }

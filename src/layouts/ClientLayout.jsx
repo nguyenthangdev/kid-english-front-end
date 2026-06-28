@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/cn'
-// import { useAuth } from '@/contexts/admin/AdminAuthContext'
+import { useUserAuth } from '@/contexts/client/UserAuthContext'
 
 const NAV = [
   {
@@ -28,7 +28,11 @@ const NAV = [
 export function ClientLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  // const { user, logout } = useAuth()
+  const { user, logout } = useUserAuth()
+
+  // Xử lý lấy tên hiển thị và chữ cái đầu cho Avatar
+  const displayName = user?.fullName || user?.name || 'User'
+  const firstLetter = displayName.charAt(0).toUpperCase()
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -59,19 +63,23 @@ export function ClientLayout() {
 
         <div className="px-5 py-3.5 border-t border-gray-100 flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            {/* {user?.name?.[0] ?? 'A'} */}'A'
+            {firstLetter}
           </div>
           <div className="flex-1 min-w-0">
-            {/* <div className="text-sm font-bold text-gray-800 truncate">{user?.name ?? 'Admin'}</div> */}
-            <div className="text-sm font-bold text-gray-800 truncate">{'Admin'}</div>
-
-            {/* <div className="text-xs text-gray-400 truncate">{user?.email ?? 'admin@kidenglish.com'}</div> */}
-            <div className="text-xs text-gray-400 truncate">{'admin@kidenglish.com'}</div>
-
+            <div className="text-sm font-bold text-gray-800 truncate" title={displayName}>
+              {displayName}
+            </div>
+            <div className="text-xs text-gray-400 truncate" title={user?.email}>
+              {user?.email || 'user@kidenglish.com'}
+            </div>
           </div>
-          {/* <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm" title="Đăng xuất">⏏</button> */}
-          <button className="text-gray-400 hover:text-gray-600 text-sm" title="Đăng xuất">⏏</button>
-
+          <button 
+            onClick={logout} 
+            className="text-gray-400 hover:text-red-500 text-sm transition-colors" 
+            title="Đăng xuất"
+          >
+            ⏏
+          </button>
         </div>
       </aside>
 

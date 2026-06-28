@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { vocabApi } from '@/apis/client/index'
+import { vocabApi, progressApi } from '@/apis/client/index'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSearchParams } from 'react-router-dom'
 import { SearchBar } from '@/components/SearchBar'
@@ -25,6 +25,8 @@ export function VocabularyPage() {
   const [categories, setCategories] = useState([])
   const [isLoading, setIsLoading] = useState(true)   // loading lần đầu
   const [isFetchingMore, setIsFetchingMore] = useState(false) // loading nút "Tải thêm"
+  const [masteredIds, setMasteredIds] = useState(new Set())
+  const [loadingIds, setLoadingIds] = useState(new Set())
 
   // --- Search & Filter State ---
   const [searchParams, setSearchParams] = useSearchParams()
@@ -44,6 +46,16 @@ export function VocabularyPage() {
         setCategories(list)
       })
       .catch(() => { }) // không crash nếu endpoint chưa có
+  }, [])
+
+  // --- Fetch mastered IDs một lần khi mount ---
+  useEffect(() => {
+    progressApi.getMasteredIds()
+      .then(res => {
+        const ids = res?.data ?? res ?? []
+        setMasteredIds(new Set(ids))
+      })
+      .catch(() => {})
   }, [])
 
   // --- Hàm fetch vocab chính ---
@@ -116,6 +128,27 @@ export function VocabularyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchVocabs, debouncedKeyword, activeCat])
 
+  const handleLearnWord = async (vocabularyId, e) => {
+    e.stopPropagation()
+    if (masteredIds.has(vocabularyId) || loadingIds.has(vocabularyId)) return
+
+    setLoadingIds(prev => new Set(prev).add(vocabularyId))
+
+    try {
+      await progressApi.learnWord({ vocabularyId, status: 'MASTERED' })
+      setMasteredIds(prev => new Set(prev).add(vocabularyId))
+      toast.success('Đã đánh dấu thuộc từ này! 🎉')
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật tiến độ!')
+    } finally {
+      setLoadingIds(prev => {
+        const next = new Set(prev)
+        next.delete(vocabularyId)
+        return next
+      })
+    }
+  }
+
   return (
     <div>
       {/* Search */}
@@ -161,27 +194,51 @@ export function VocabularyPage() {
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-4">
-              {vocabs.map(v => (
-                <div
-                  key={v.id}
-                  className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-400 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-                >
-                  {v.imageUrl ? (
-                    <img
-                      src={v.imageUrl}
-                      alt={v.word}
-                      className="w-full h-28 object-cover rounded-xl mb-3"
-                    />
-                  ) : (
-                    <div className="text-4xl mb-3">📖</div>
-                  )}
-                  <div className="text-xl font-extrabold text-gray-800 mb-0.5">{v.word}</div>
-                  <div className="text-xs text-gray-400 mb-1">{v.pronunciation}</div>
-                  <div className="text-sm text-gray-600 mb-3">{v.meaning}</div>
-                  {/* Hỗ trợ cả tag object (API mới) lẫn category string (mock cũ) */}
-                  <CategoryBadge value={v.tag?.name ?? v.category} color={v.tag?.colorCode} />
-                </div>
-              ))}
+              {vocabs.map(v => {
+                const isMastered = masteredIds.has(v.id)
+                const isLoadingWord = loadingIds.has(v.id)
+
+                return (
+                  <div
+                    key={v.id}
+                    onClick={(e) => handleLearnWord(v.id, e)}
+                    className={`relative bg-white rounded-2xl border p-5 transition-all cursor-pointer overflow-hidden ${
+                      isMastered 
+                        ? 'border-emerald-400 bg-emerald-50/50 shadow-sm' 
+                        : 'border-gray-200 hover:border-emerald-400 hover:shadow-md hover:-translate-y-0.5'
+                    }`}
+                  >
+                    {/* Badge đã thuộc */}
+                    {isMastered && (
+                      <div className="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm z-10">
+                        <span>✓</span> Đã thuộc
+                      </div>
+                    )}
+
+                    {/* Overlay loading */}
+                    {isLoadingWord && (
+                      <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-20 backdrop-blur-[1px]">
+                        <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                      </div>
+                    )}
+
+                    {v.imageUrl ? (
+                      <img
+                        src={v.imageUrl}
+                        alt={v.word}
+                        className={`w-full h-28 object-cover rounded-xl mb-3 transition-opacity ${isMastered ? 'opacity-80' : ''}`}
+                      />
+                    ) : (
+                      <div className="text-4xl mb-3">📖</div>
+                    )}
+                    <div className="text-xl font-extrabold text-gray-800 mb-0.5">{v.word}</div>
+                    <div className="text-xs text-gray-400 mb-1">{v.pronunciation}</div>
+                    <div className="text-sm text-gray-600 mb-3">{v.meaning}</div>
+                    {/* Hỗ trợ cả tag object (API mới) lẫn category string (mock cũ) */}
+                    <CategoryBadge value={v.tag?.name ?? v.category} color={v.tag?.colorCode} />
+                  </div>
+                )
+              })}
             </div>
           )}
 
