@@ -14,6 +14,5 @@ const requestAuthorized = async (method, path, data) => {
 }
 
 export const adminDashboardApi = {
-  getStats:          () => requestAuthorized('GET', '/admin/dashboard/stats'),
-  getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
+  getDashboard: () => requestAuthorized('GET', '/home/admin/dashboard'),
 }

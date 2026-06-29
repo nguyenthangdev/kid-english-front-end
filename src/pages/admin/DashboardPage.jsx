@@ -39,22 +39,23 @@ export function DashboardPage() {
       try {
         setIsLoading(true)
 
-        const [statsRes, activityRes] = await Promise.allSettled([
-          adminDashboardApi.getStats(),
-          adminDashboardApi.getRecentActivity(),
-        ])
+        const res = await adminDashboardApi.getDashboard()
+        const data = res?.data || res
 
-        if (statsRes.status === 'fulfilled') {
-          setStats(statsRes.value?.data ?? statsRes.value)
+        if (data?.overview) {
+          setStats({
+            totalUsers: data.overview.totalUsers || 0,
+            totalVocabs: data.overview.totalVocabularies || 0,
+            totalQuotes: data.overview.totalQuotes || 0,
+            totalTags: data.overview.totalTags || 0,
+          })
         }
 
-        if (activityRes.status === 'fulfilled' && activityRes.value) {
-          const list = activityRes.value?.data ?? activityRes.value ?? []
-          setRecentActivity(list.length > 0 ? list : FALLBACK_RECENT)
-        } else {
-          setRecentActivity(FALLBACK_RECENT)
-        }
-      } catch {
+        // Hiện tại API chưa trả về recentActivities nên ta dùng fallback
+        const activityList = data?.recentActivities || []
+        setRecentActivity(activityList.length > 0 ? activityList : FALLBACK_RECENT)
+
+      } catch (error) {
         // Không crash khi API chưa có — dùng fallback
         setRecentActivity(FALLBACK_RECENT)
       } finally {

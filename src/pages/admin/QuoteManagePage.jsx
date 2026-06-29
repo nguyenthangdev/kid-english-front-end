@@ -98,16 +98,24 @@ export function QuoteManagePage() {
     try {
       setIsSaving(true)
       if (modal?.id) {
-        await adminQuoteApi.update(modal.id, form)
-        toast.success('Cập nhật câu nói thành công!')
+        const res = await adminQuoteApi.update(modal.id, form)
+        toast.success(res?.message || 'Cập nhật câu nói thành công!')
+        
+        setQuotes(prev => prev.map(item => {
+          if (item.id === modal.id) {
+            const updatedData = res?.data?.data || res?.data || form;
+            return { ...item, ...updatedData };
+          }
+          return item;
+        }))
       } else {
         await adminQuoteApi.create(form)
         toast.success('Thêm câu nói mới thành công!')
+        fetchQuotes(null)
       }
       setModal(null)
-      fetchQuotes(null) 
     } catch (error) {
-      toast.error(error.response.data.message || 'Lỗi khi lưu câu nói!')
+      toast.error(error.response?.data?.message || 'Lỗi khi lưu câu nói!')
     } finally {
       setIsSaving(false)
     }
@@ -117,11 +125,11 @@ export function QuoteManagePage() {
     try {
       setIsDeleting(true)
       const res = await adminQuoteApi.remove(deleteId)
-      toast.success(res.message)
+      toast.success(res?.message || 'Xóa câu nói thành công!')
+      setQuotes(prev => prev.filter(item => item.id !== deleteId))
       setDeleteId(null)
-      fetchQuotes(null) 
     } catch (error) {
-      toast.error(error.response.data.message || 'Lỗi khi xóa câu nói!')
+      toast.error(error.response?.data?.message || 'Lỗi khi xóa câu nói!')
     } finally {
       setIsDeleting(false)
     }

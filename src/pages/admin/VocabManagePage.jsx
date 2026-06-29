@@ -14,7 +14,10 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useSearchParams } from 'react-router-dom'
 import { formatVietnamDateTime } from '@/utils/formatVietnamDateTime';
 
+import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
+
 export function VocabManagePage() {
+  const { hasPermission } = useAdminAuth()
   const { state: { tags }, fetchTags } = useVocabTags()
   const [searchParams, setSearchParams] = useSearchParams()
   const urlKeyword = searchParams.get('keyword') || ''
@@ -23,15 +26,15 @@ export function VocabManagePage() {
 
   // 2. Cho inputValue đi qua "bộ hãm phanh" 500ms
   const debouncedKeyword = useDebounce(inputValue, 500)
-  
+
   // --- STATE CHO CURSOR PAGINATION ---
   const [vocabs, setVocabs] = useState([])
   const [nextCursor, setNextCursor] = useState(null)
   const [hasMore, setHasMore] = useState(false)
-  
+
   const [isLoading, setIsLoading] = useState(true)
   const [isFetchingMore, setIsFetchingMore] = useState(false) // Trạng thái riêng cho nút Load More
-  
+
   const [modal, setModal] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -58,13 +61,13 @@ export function VocabManagePage() {
       const response = await adminVocabApi.getAll(params)
 
       const axiosData = response?.data || {}
-      
+
       if (cursorToFetch) {
-        setVocabs(prev => [...prev, ...axiosData]) 
+        setVocabs(prev => [...prev, ...axiosData])
       } else {
-        setVocabs(axiosData) 
+        setVocabs(axiosData)
       }
-      
+
       setNextCursor(response.nextCursor)
       setHasMore(response.hasMore)
 
@@ -88,7 +91,7 @@ export function VocabManagePage() {
     }
 
     fetchVocabularies(null)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedKeyword, fetchVocabularies])
 
   useEffect(() => {
@@ -105,7 +108,7 @@ export function VocabManagePage() {
       if (modal?.id) {
         const res = await adminVocabApi.update(modal.id, form)
         toast.success(res?.message)
-        
+
         setVocabs(prev => prev.map(item => {
           if (item.id === modal.id) {
             // Lấy dữ liệu trả về từ API (hoặc từ form) đè lên dữ liệu cũ
@@ -147,10 +150,14 @@ export function VocabManagePage() {
 
   return (
     <div>
-      <PageHeader title="Từ vựng của bé" action="Thêm từ vựng" onAction={() => setModal({})} />
-      
+      <PageHeader 
+        title="Từ vựng của bé" 
+        action={hasPermission('VOCABULARY', 'CREATE') ? "Thêm từ vựng" : null} 
+        onAction={() => setModal({})} 
+      />
+
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden relative min-h-[300px]">
-        
+
         {isLoading && (
           <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
             <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
@@ -158,10 +165,10 @@ export function VocabManagePage() {
         )}
 
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <SearchBar 
-            placeholder="Tìm từ vựng..." 
-            value={inputValue} 
-            onChange={handleSearchChange} 
+          <SearchBar
+            placeholder="Tìm từ vựng..."
+            value={inputValue}
+            onChange={handleSearchChange}
           />
           <span className="text-sm text-gray-500">{vocabs.length} từ vựng</span>
         </div>
@@ -183,7 +190,7 @@ export function VocabManagePage() {
                   </td>
                 </tr>
               )}
-              
+
               {/* Render mảng vocabs (chứa những item đang có trên máy) */}
               {vocabs.map((v, i) => (
                 <tr key={v.id} className="hover:bg-gray-50 transition-colors">
@@ -212,8 +219,12 @@ export function VocabManagePage() {
                   <td className="px-5 py-4 text-sm text-gray-700">{formatVietnamDateTime(v.updatedAt)}</td>
                   <td className="px-5 py-4">
                     <div className="flex gap-2">
-                      <button onClick={() => setModal(v)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4"/></button>
-                      <button onClick={() => setDeleteId(v.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4"/></button>
+                      {hasPermission('VOCABULARY', 'UPDATE') && (
+                        <button onClick={() => setModal(v)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"><SquarePen className="w-4 h-4" /></button>
+                      )}
+                      {hasPermission('VOCABULARY', 'DELETE') && (
+                        <button onClick={() => setDeleteId(v.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"><Trash2 className="w-4 h-4" /></button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -221,32 +232,32 @@ export function VocabManagePage() {
             </tbody>
           </table>
         </div>
-        
+
         {/* Nút Tải Thêm (Load More) */}
         {hasMore && (
           <div className="px-5 py-4 border-t border-gray-50 flex justify-center">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => fetchVocabularies(nextCursor)}
               disabled={isFetchingMore}
               className="rounded-full px-6"
             >
               {isFetchingMore ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              {isFetchingMore ? 
-              ('Đang tải...') : 
-              (
-                <>
-                  <ArrowBigDownDash /> 
-                  {' '}Tải thêm từ vựng
-                </>
-              )}
+              {isFetchingMore ?
+                ('Đang tải...') :
+                (
+                  <>
+                    <ArrowBigDownDash />
+                    {' '}Tải thêm từ vựng
+                  </>
+                )}
             </Button>
           </div>
         )}
       </div>
 
       <VocabModal open={!!modal} item={modal} tags={tags} onClose={() => !isSaving && setModal(null)} onSave={handleSave} isSaving={isSaving} />
-      
+
       <ConfirmDialog open={!!deleteId} onClose={() => !isDeleting && setDeleteId(null)} onConfirm={handleDelete} title="Xóa từ vựng" description={`Bạn có chắc chắn muốn xóa từ vựng này không?`} isLoading={isDeleting} />
     </div>
   )

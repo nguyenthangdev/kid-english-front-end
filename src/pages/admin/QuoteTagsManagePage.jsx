@@ -101,16 +101,25 @@ export function QuoteTagsManagePage() {
       }
 
       if (modal?.id) {
-        await adminQuoteTagsApi.update(modal.id, payload)
-        toast.success('Cập nhật thẻ thành công!')
+        const res = await adminQuoteTagsApi.update(modal.id, payload)
+        toast.success(res?.message || 'Cập nhật thẻ thành công!')
+        
+        setTags(prev => prev.map(item => {
+          if (item.id === modal.id) {
+             const updatedData = res?.data?.data || res?.data || payload;
+             return { ...item, ...updatedData };
+          }
+          return item;
+        }))
+        refreshContextTags(true) // Cập nhật ngầm Context
       } else {
         await adminQuoteTagsApi.create(payload)
         toast.success('Thêm thẻ mới thành công!')
+        fetchLocalTags(null)
+        refreshContextTags(true) // Cập nhật ngầm Context
       }
       
       setModal(null)
-      fetchLocalTags(null)
-      refreshContextTags(true) // Cập nhật ngầm Context
       
     } catch (error) {
       console.log('Lỗi khi lưu thẻ: ', error)
@@ -124,10 +133,10 @@ export function QuoteTagsManagePage() {
     try {
       setIsDeleting(true)
       const res = await adminQuoteTagsApi.remove(deleteId)
-      toast.success(res.message)
+      toast.success(res?.message || 'Xóa thẻ thành công!')
+      setTags(prev => prev.filter(item => item.id !== deleteId))
       setDeleteId(null)
       
-      fetchLocalTags(null)
       refreshContextTags(true)
       
     } catch (error) {
