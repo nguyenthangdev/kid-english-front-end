@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
-import { adminAuthApi } from '@/apis/admin/index'
+import { adminAuthApi } from '@/apis/admin'
 import { Loader2 } from 'lucide-react'
 import { loginSchema } from '@/validations/admin/auth.validation'
 import { toast } from 'react-toastify'
@@ -37,18 +37,12 @@ export function AdminLoginPage() {
         email: data.email, 
         password: data.password 
       })
-      if (response.code === 200) {
-        login(response.accountAdmin, response.role)
-        toast.success(response.message)
-
-        navigate('/admin/dashboard')
-      } else {
-        toast.error(response.message)
-      }
+      const responseData = response.data
+      login(responseData.accountAdmin, responseData.role)
+      toast.success(responseData.message)
+      navigate('/admin/dashboard')
     } catch (error) {
-      if (error.response?.status === 429) {
-        toast.error('Bạn đã thử quá nhiều lần. Vui lòng quay lại sau 1 phút!')
-      }
+      toast.error(error.response.data.message)
     } finally {
       setIsLoading(false)
     }

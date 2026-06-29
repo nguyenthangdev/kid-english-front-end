@@ -5,7 +5,7 @@ import { CategoryBadge } from '@/components/CategoryBadge'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { TagsModal } from '@/components/admin/TagsModal'
 import { useVocabTags } from '@/contexts/admin/VocabTagsContext'
-import { vocabTagsApi } from '@/apis/admin'
+import { adminVocabTagsApi } from '@/apis/admin'
 import { toast } from 'react-toastify'
 import { Loader2, SquarePen, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
@@ -47,7 +47,7 @@ export function VoCabTagsManagePage() {
       }
       if (cursorToFetch) params.cursor = cursorToFetch
 
-      const response = await vocabTagsApi.getAll(params)
+      const response = await adminVocabTagsApi.getAll(params)
       const payload = response?.data?.data ? response.data : response
 
       if (cursorToFetch) {
@@ -60,7 +60,7 @@ export function VoCabTagsManagePage() {
       setHasMore(payload.hasMore)
 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi tải danh sách thẻ!')
+      toast.error(error.response.data.message || 'Lỗi khi tải danh sách thẻ!')
     } finally {
       setIsLoading(false)
       setIsFetchingMore(false)
@@ -100,10 +100,10 @@ export function VoCabTagsManagePage() {
       }
 
       if (modal?.id) {
-        await vocabTagsApi.update(modal.id, payload)
+        await adminVocabTagsApi.update(modal.id, payload)
         toast.success('Cập nhật thẻ thành công!')
       } else {
-        await vocabTagsApi.create(payload)
+        await adminVocabTagsApi.create(payload)
         toast.success('Thêm thẻ mới thành công!')
       }
       
@@ -121,15 +121,15 @@ export function VoCabTagsManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await vocabTagsApi.remove(deleteId)
-      toast.success('Đã xóa thẻ thành công!')
+      const res = await adminVocabTagsApi.remove(deleteId)
+      toast.success(res.message)
       setDeleteId(null)
       
       fetchLocalTags(null)
       refreshContextTags()
       
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi xóa thẻ!')
+      toast.error(error.response.data.message || 'Lỗi khi xóa thẻ!')
     } finally {
       setIsDeleting(false)
     }

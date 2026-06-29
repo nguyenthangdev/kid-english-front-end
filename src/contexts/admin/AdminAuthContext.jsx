@@ -1,8 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
 import { createContext, useContext, useEffect, useState } from 'react'
-import { adminAuthApi } from '@/apis/admin/index'
+import { adminAuthApi, adminProfileApi } from '@/apis/admin'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 const AdminAuthContext = createContext(undefined)
 
@@ -16,11 +17,11 @@ export const AdminAuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const response = await adminAuthApi.me()
-        
-        if (response && response.accountAdmin) {
-          setAccountAdmin(response.accountAdmin)
-          setRole(response.role || null)
+        const response = await adminProfileApi.getProfile()
+        const responseData = response.data
+        if (responseData && responseData.accountAdmin) {
+          setAccountAdmin(responseData.accountAdmin)
+          setRole(responseData.role || null)
         } else {
           setAccountAdmin(null)
           setRole(null)
@@ -61,7 +62,7 @@ export const AdminAuthProvider = ({ children }) => {
     try {
       response = await adminAuthApi.logoutAdmin()
     } catch (error) {
-      console.error('Lỗi khi logout:', error)
+      toast.error(error.response.data.message)
     } finally {
       setAccountAdmin(null)
       setRole(null)
@@ -72,15 +73,19 @@ export const AdminAuthProvider = ({ children }) => {
   }
 
   const refreshUser = async () => {
+    let response = null
     try {
-      const response = await adminAuthApi.me()
-      if (response && response.accountAdmin) {
-        setAccountAdmin(response.accountAdmin)
-        setRole(response.role || null)
+      response = await adminProfileApi.getProfile()
+      const responseData = response.data
+      if (responseData && responseData.accountAdmin) {
+        setAccountAdmin(responseData.accountAdmin)
+        setRole(responseData.role || null)
       }
     } catch (error) {
-      console.error('Lỗi khi refresh user:', error)
+      toast.error(error.response.data.message)
     }
+
+    return response
   }
 
   if (isLoading) {

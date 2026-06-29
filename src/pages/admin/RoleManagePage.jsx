@@ -101,8 +101,8 @@ export function RoleManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await adminRoleApi.remove(deleteId)
-      toast.success('Đã xóa quyền thành công!')
+      const res = await adminRoleApi.remove(deleteId)
+      toast.success(res.message)
       setDeleteId(null)
       fetchRoles(null) 
     } catch (error) {
