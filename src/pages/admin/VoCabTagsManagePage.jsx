@@ -100,16 +100,25 @@ export function VoCabTagsManagePage() {
       }
 
       if (modal?.id) {
-        await adminVocabTagsApi.update(modal.id, payload)
-        toast.success('Cập nhật thẻ thành công!')
+        const res = await adminVocabTagsApi.update(modal.id, payload)
+        toast.success(res?.message || 'Cập nhật thẻ thành công!')
+        
+        setTags(prev => prev.map(item => {
+          if (item.id === modal.id) {
+             const updatedData = res?.data?.data || res?.data || payload;
+             return { ...item, ...updatedData };
+          }
+          return item;
+        }))
+        refreshContextTags()
       } else {
         await adminVocabTagsApi.create(payload)
         toast.success('Thêm thẻ mới thành công!')
+        fetchLocalTags(null)
+        refreshContextTags()
       }
       
       setModal(null)
-      fetchLocalTags(null)
-      refreshContextTags()
     } catch (error) {
       // toast.error(error.message || 'Lỗi khi lưu thẻ!')
       console.log('Lỗi khi lưu thẻ! ', error.message )
@@ -122,10 +131,10 @@ export function VoCabTagsManagePage() {
     try {
       setIsDeleting(true)
       const res = await adminVocabTagsApi.remove(deleteId)
-      toast.success(res.message)
+      toast.success(res?.message || 'Xóa thẻ thành công!')
+      setTags(prev => prev.filter(item => item.id !== deleteId))
       setDeleteId(null)
       
-      fetchLocalTags(null)
       refreshContextTags()
       
     } catch (error) {

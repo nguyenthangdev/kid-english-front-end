@@ -10,7 +10,7 @@ const AdminAuthContext = createContext(undefined)
 export const AdminAuthProvider = ({ children }) => {
   const [accountAdmin, setAccountAdmin] = useState(null)
   const [role, setRole] = useState(null)
-  
+
   const [isLoading, setIsLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -96,6 +96,12 @@ export const AdminAuthProvider = ({ children }) => {
     )
   }
 
+  const hasPermission = (moduleName, actionName = 'READ') => {
+    if (role?.code === 'ADMIN') return true;
+    if (!role || !role.permissions) return false;
+    return role.permissions.some(p => p.module === moduleName && p.action === actionName);
+  };
+
   const value = {
     accountAdmin,
     admin: accountAdmin,
@@ -105,7 +111,8 @@ export const AdminAuthProvider = ({ children }) => {
     isAuthenticated: authChecked && !!accountAdmin,
     login,
     logout,
-    refreshUser
+    refreshUser,
+    hasPermission
   }
 
   return (

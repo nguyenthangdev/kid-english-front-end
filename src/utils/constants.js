@@ -2,15 +2,15 @@ export const API_ROOT = import.meta.env.VITE_API_ROOT
 
 export const CATEGORY_COLORS = {
   feelings: 'bg-pink-100 text-pink-700',
-  numbers:  'bg-yellow-100 text-yellow-700',
-  colors:   'bg-purple-100 text-purple-700',
-  family:   'bg-blue-100 text-blue-700',
-  animals:  'bg-green-100 text-green-700',
-  school:   'bg-orange-100 text-orange-700',
+  numbers: 'bg-yellow-100 text-yellow-700',
+  colors: 'bg-purple-100 text-purple-700',
+  family: 'bg-blue-100 text-blue-700',
+  animals: 'bg-green-100 text-green-700',
+  school: 'bg-orange-100 text-orange-700',
 }
 
 export const TAG_COLORS = {
-  study:      'bg-blue-100 text-blue-700',
+  study: 'bg-blue-100 text-blue-700',
   motivation: 'bg-orange-100 text-orange-700',
   friendship: 'bg-pink-100 text-pink-700',
 }
@@ -20,9 +20,9 @@ export const ITEMS_PER_PAGE = 8
 export const COLORS = ['green', 'blue', 'pink', 'yellow', 'purple', 'orange']
 
 export const COLOR_VARIANTS = {
-  green:  'bg-green-100 text-green-700',
-  blue:   'bg-blue-100 text-blue-700',
-  pink:   'bg-pink-100 text-pink-700',
+  green: 'bg-green-100 text-green-700',
+  blue: 'bg-blue-100 text-blue-700',
+  pink: 'bg-pink-100 text-pink-700',
   yellow: 'bg-yellow-100 text-yellow-700',
   purple: 'bg-purple-100 text-purple-700',
   orange: 'bg-orange-100 text-orange-700',
@@ -30,30 +30,30 @@ export const COLOR_VARIANTS = {
 
 
 export const TITLES = {
-  '/admin/dashboard':   '📊 Tổng quan',
-  '/admin/vocabulary':  '📖 Từ vựng của bé',
-  '/admin/quotes':      '💬 Câu nói mỗi ngày',
-  '/admin/vocab-tags':  '🏷️ Các thẻ từ vựng',
-  '/admin/quote-tags':  '🏷️ Các thẻ câu nói',
-  '/admin/admins':      '🛡️ Tài khoản Admin',
-  '/admin/users':       '👥 Người dùng',
-  '/admin/roles':       '🔑 Nhóm quyền',
+  '/admin/dashboard': '📊 Tổng quan',
+  '/admin/vocabulary': '📖 Từ vựng của bé',
+  '/admin/quotes': '💬 Câu nói mỗi ngày',
+  '/admin/vocab-tags': '🏷️ Các thẻ từ vựng',
+  '/admin/quote-tags': '🏷️ Các thẻ câu nói',
+  '/admin/admins': '🛡️ Tài khoản Admin',
+  '/admin/users': '👥 Người dùng',
+  '/admin/roles': '🔑 Nhóm quyền',
   '/admin/permissions': '📋 Ma trận phân quyền',
-  '/admin/profile':     '👤 Hồ sơ của tôi',
-  '/admin/settings':    '⚙️ Cài đặt',
+  '/admin/profile': '👤 Hồ sơ của tôi',
+  '/admin/settings': '⚙️ Cài đặt',
 }
 
 export const MODULE_NAMES = {
-    VOCABULARY: 'Từ vựng của bé',
-    QUOTE: 'Câu nói mỗi ngày',
-    USER: 'Tài khoản người dùng',
-    ROLE: 'Nhóm quyền & Phân quyền',
-    // Sau này có thêm module mới, chỉ cần khai báo thêm tên đẹp ở đây
-  }
+  VOCABULARY: 'Từ vựng của bé',
+  QUOTE: 'Câu nói mỗi ngày',
+  USER: 'Tài khoản người dùng',
+  ROLE: 'Nhóm quyền',
+  // Sau này có thêm module mới, chỉ cần khai báo thêm tên đẹp ở đây
+}
 
 export const ACTION_NAMES = {
-    CREATE: 'Thêm mới',
-    READ: 'Xem danh sách',
-    UPDATE: 'Chỉnh sửa',
-    DELETE: 'Xóa',
-  }
+  CREATE: 'Thêm mới',
+  READ: 'Xem danh sách',
+  UPDATE: 'Chỉnh sửa',
+  DELETE: 'Xóa',
+}

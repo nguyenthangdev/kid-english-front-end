@@ -6,33 +6,63 @@ import { Bell, ChevronDown, LogOut, Settings, User, Book, Building, Key, LayoutD
 import { TITLES } from '@/utils'
 
 const NAV = [
-  { group: 'Tổng quan', items: [
-    { to: '/admin/dashboard',   icon: <LayoutDashboard />, label: 'Tổng quan' },
-  ]},
-  { group: 'Nội dung', items: [
-    { to: '/admin/vocabulary',  icon: <Book />, label: 'Từ vựng của bé' },
-    { to: '/admin/quotes',      icon: <MessageSquareText />, label: 'Câu nói mỗi ngày' },
-    { to: '/admin/vocab-tags',  icon: <Tag />, label: 'Các thẻ từ vựng' },
-    { to: '/admin/quote-tags',  icon: <TagPlus />, label: 'Các thẻ câu nói' },
-  ]},
-  { group: 'Người dùng', items: [
-    { to: '/admin/users',       icon: <UsersRound />, label: 'Người dùng' },
-    { to: '/admin/admins',      icon: <ShieldUser />, label: 'Tài khoản Admin' },
-  ]},
-  { group: 'Phân quyền', items: [
-    { to: '/admin/roles',       icon: <Key />, label: 'Nhóm quyền' },
-    { to: '/admin/permissions', icon: <Building />, label: 'Ma trận phân quyền' },
-  ]},
-  { group: 'Tài khoản', items: [
-    { to: '/admin/profile',     icon: <UserPen />, label: 'Hồ sơ của tôi' },
-    { to: '/admin/settings',    icon: <Settings />, label: 'Cài đặt' },
-  ]},
+  {
+    group: 'Tổng quan', items: [
+      { to: '/admin/dashboard', icon: <LayoutDashboard />, label: 'Tổng quan' },
+    ]
+  },
+  {
+    group: 'Nội dung', items: [
+      { to: '/admin/vocabulary', icon: <Book />, label: 'Từ vựng của bé' },
+      { to: '/admin/quotes', icon: <MessageSquareText />, label: 'Câu nói mỗi ngày' },
+      { to: '/admin/vocab-tags', icon: <Tag />, label: 'Các thẻ từ vựng' },
+      { to: '/admin/quote-tags', icon: <TagPlus />, label: 'Các thẻ câu nói' },
+    ]
+  },
+  {
+    group: 'Người dùng', items: [
+      { to: '/admin/users', icon: <UsersRound />, label: 'Người dùng' },
+      { to: '/admin/admins', icon: <ShieldUser />, label: 'Tài khoản Admin' },
+    ]
+  },
+  {
+    group: 'Phân quyền', items: [
+      { to: '/admin/roles', icon: <Key />, label: 'Nhóm quyền' },
+      { to: '/admin/permissions', icon: <Building />, label: 'Ma trận phân quyền' },
+    ]
+  },
+  {
+    group: 'Tài khoản', items: [
+      { to: '/admin/profile', icon: <UserPen />, label: 'Hồ sơ của tôi' },
+      { to: '/admin/settings', icon: <Settings />, label: 'Cài đặt' },
+    ]
+  },
 ]
 
 export function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { admin, logout } = useAdminAuth()
+  const { admin, hasPermission, logout } = useAdminAuth()
+
+  const filteredNav = NAV.map(group => {
+    const items = group.items.filter(item => {
+      switch (item.to) {
+        case '/admin/dashboard': return true;
+        case '/admin/vocabulary': return hasPermission('VOCABULARY');
+        case '/admin/quotes': return hasPermission('QUOTE');
+        case '/admin/vocab-tags': return hasPermission('TAG');
+        case '/admin/quote-tags': return hasPermission('TAG');
+        case '/admin/users': return hasPermission('USER');
+        case '/admin/admins': return hasPermission('USER');
+        case '/admin/roles': return hasPermission('ROLE');
+        case '/admin/permissions': return hasPermission('PERMISSION');
+        case '/admin/profile': return true;
+        case '/admin/settings': return true;
+        default: return true;
+      }
+    });
+    return { ...group, items };
+  }).filter(group => group.items.length > 0);
 
   const handleLogout = async () => {
     const response = await logout()
@@ -50,7 +80,7 @@ export function AdminLayout() {
         </div>
 
         <nav className="flex-1 py-3 overflow-y-auto">
-          {NAV.map(g => (
+          {filteredNav.map(g => (
             <div key={g.group} className="mb-2">
               <div className="px-5 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{g.group}</div>
               {g.items.map(item => (
@@ -69,9 +99,9 @@ export function AdminLayout() {
 
         <div className="px-5 py-3.5 border-t border-gray-100 flex items-center gap-2.5">
           {admin?.avatarUrl ? (
-            <img 
-              src={admin.avatarUrl} 
-              alt={admin?.name ?? 'Avatar'} 
+            <img
+              src={admin.avatarUrl}
+              alt={admin?.name ?? 'Avatar'}
               className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-gray-100 shadow-sm"
             />
           ) : (
@@ -99,9 +129,9 @@ export function AdminLayout() {
             <div className="relative group">
               <button className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white pl-1 pr-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500">
                 {admin?.avatarUrl ? (
-                  <img 
-                    src={admin.avatarUrl} 
-                    alt={admin?.name ?? 'Avatar'} 
+                  <img
+                    src={admin.avatarUrl}
+                    alt={admin?.name ?? 'Avatar'}
                     className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-gray-100 shadow-sm"
                   />
                 ) : (
