@@ -61,3 +61,4 @@ export const progressApi = {
   learnWord: (data) => requestAuthorizedClient('POST', '/home/progress/learn', data),
   getMasteredIds: () => requestAuthorizedClient('GET', '/home/progress/mastered'),
 };
+

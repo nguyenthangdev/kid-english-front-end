@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useSearch } from '@/hooks/useSearch'
-import { usePagination } from '@/hooks/usePagination'
 import { PageHeader } from '@/components/PageHeader'
 import { SearchBar } from '@/components/SearchBar'
 import { StatusBadge } from '@/components/StatusBadge'
@@ -12,46 +10,77 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { userAccountApi } from '@/apis/admin'
 import { toast } from 'react-toastify'
 import { Loader2, SquarePen, Trash2 } from 'lucide-react'
+import { useAdminAuth } from '@/contexts/admin/AdminAuthContext'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useSearchParams } from 'react-router-dom'
 
 // -- MOCK DATA CŨ (giữ lại để rollback nhanh nếu cần) --
 // import { MOCK_USERS } from '@/utils/mockData'
 
 export function UserManagePage() {
-  const [users,      setUsers]      = useState([])
-  const [isLoading,  setIsLoading]  = useState(true)
-  const [isSaving,   setIsSaving]   = useState(false)
-  const [modal,      setModal]      = useState(null)
-  const [deleteId,   setDeleteId]   = useState(null)
+  const { hasPermission } = useAdminAuth()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlKeyword = searchParams.get('keyword') || ''
+  const [inputValue, setInputValue] = useState(urlKeyword)
+  const debouncedKeyword = useDebounce(inputValue, 500)
+
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+
+  const [users, setUsers] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [modal, setModal] = useState(null)
+  const [deleteId, setDeleteId] = useState(null)
 
   // Form state cho modal sửa
-  const [form, setForm] = useState({ fullName: '', email: '', status: 'active' })
+  const [form, setForm] = useState({ fullName: '', email: '', isActive: true })
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }))
-
-  const { query, setQuery, filtered } = useSearch(users, ['fullName', 'email', 'name'])
-  const { page, setPage, totalPages, paged } = usePagination(filtered)
 
   // Fetch danh sách user
   const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await userAccountApi.getAll()
+      const params = { page, limit: 10 }
+      if (debouncedKeyword) params.search = debouncedKeyword
+      const response = await userAccountApi.getAll(params)
       setUsers(response?.data ?? response ?? [])
+      setTotalPages(response?.totalPages ?? 1)
+      setTotalCount(response?.total ?? 0)
     } catch (error) {
       toast.error(error.message || 'Lỗi khi tải danh sách người dùng!')
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [page, debouncedKeyword])
 
-  useEffect(() => { fetchUsers() }, [fetchUsers])
+  useEffect(() => {
+    const currentUrlKeyword = searchParams.get('keyword') || ''
+    const currentUrlPage = searchParams.get('page') || '1'
+    let urlChanged = false
+
+    if (debouncedKeyword !== currentUrlKeyword) {
+      debouncedKeyword ? searchParams.set('keyword', debouncedKeyword) : searchParams.delete('keyword')
+      urlChanged = true
+    }
+    if (page.toString() !== currentUrlPage) {
+      page > 1 ? searchParams.set('page', page.toString()) : searchParams.delete('page')
+      urlChanged = true
+    }
+    if (urlChanged) setSearchParams(searchParams)
+
+    fetchUsers()
+  }, [debouncedKeyword, page, fetchUsers, searchParams, setSearchParams])
 
   // Mở modal sửa — sync form với data user
   const openEditModal = (user) => {
     setModal(user)
     setForm({
       fullName: user.fullName ?? user.name ?? '',
-      email:    user.email    ?? '',
-      status:   user.status   ?? 'active',
+      email: user.email ?? '',
+      isActive: user.isActive ?? true,
     })
   }
 
@@ -84,9 +113,9 @@ export function UserManagePage() {
         )}
 
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <SearchBar placeholder="Tìm người dùng..." value={query} onChange={v => { setQuery(v); setPage(1) }} />
+          <SearchBar placeholder="Tìm người dùng..." value={inputValue} onChange={v => { setInputValue(v); setPage(1) }} />
           <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            {filtered.length} người dùng
+            {totalCount} người dùng
           </span>
         </div>
 
@@ -96,12 +125,12 @@ export function UserManagePage() {
               <tr>{['#', 'Người dùng', 'Ngày tham gia', 'Từ đã học', 'Streak', 'Trạng thái', 'Thao tác'].map(h => <th key={h} className="px-5 py-3 text-left">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {paged.length === 0 && !isLoading && (
+              {users.length === 0 && !isLoading && (
                 <tr><td colSpan="7" className="px-5 py-8 text-center text-gray-400">Chưa có người dùng nào.</td></tr>
               )}
-              {paged.map((u, i) => (
+              {users.map((u, i) => (
                 <tr key={u.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-4 text-sm text-gray-400">{(page - 1) * 8 + i + 1}</td>
+                  <td className="px-5 py-4 text-sm text-gray-400">{(page - 1) * 10 + i + 1}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2.5">
                       {u.avatarUrl ? (
@@ -126,23 +155,27 @@ export function UserManagePage() {
                       🔥 {u.streak ?? 0}
                     </span>
                   </td>
-                  <td className="px-5 py-4"><StatusBadge active={u.status === 'active'} /></td>
+                  <td className="px-5 py-4"><StatusBadge active={u.isActive} /></td>
                   <td className="px-5 py-4">
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => openEditModal(u)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"
-                      >
-                        <SquarePen className="w-4 h-4"/>
-                      </button>
+                      {hasPermission('USER', 'UPDATE') && (
+                        <button
+                          onClick={() => openEditModal(u)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all"
+                        >
+                          <SquarePen className="w-4 h-4" />
+                        </button>
+                      )}
                       {/* Nút xóa — chỉ hiện nếu backend hỗ trợ soft delete */}
-                      <button
-                        onClick={() => setDeleteId(u.id)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"
-                        title="Vô hiệu hóa tài khoản"
-                      >
-                        <Trash2 className="w-4 h-4"/>
-                      </button>
+                      {hasPermission('USER', 'DELETE') && (
+                        <button
+                          onClick={() => setDeleteId(u.id)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-100 hover:bg-red-50 text-red-500 transition-all"
+                          title="Vô hiệu hóa tài khoản"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -151,9 +184,11 @@ export function UserManagePage() {
           </table>
         </div>
 
-        <div className="px-5 pb-3">
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-        </div>
+        {totalPages > 1 && (
+          <div className="px-5 py-4 border-t border-gray-50 flex justify-end">
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          </div>
+        )}
       </div>
 
       {/* Modal chỉnh sửa */}
@@ -167,8 +202,8 @@ export function UserManagePage() {
               <Label>Kích hoạt tài khoản</Label>
               <input
                 type="checkbox"
-                checked={form.status === 'active'}
-                onChange={e => setField('status', e.target.checked ? 'active' : 'inactive')}
+                checked={form.isActive}
+                onChange={e => setField('isActive', e.target.checked)}
                 className="w-4 h-4 accent-emerald-500"
               />
             </div>
@@ -198,7 +233,7 @@ export function UserManagePage() {
               variant="destructive"
               onClick={async () => {
                 try {
-                  await userAccountApi.update(deleteId, { status: 'inactive' })
+                  await userAccountApi.update(deleteId, { isActive: false })
                   toast.success('Đã vô hiệu hóa tài khoản!')
                   setDeleteId(null)
                   fetchUsers()
