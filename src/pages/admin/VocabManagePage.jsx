@@ -69,7 +69,7 @@ export function VocabManagePage() {
       setHasMore(response.hasMore)
 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi tải danh sách từ vựng!')
+      toast.error(error.response.data.message || 'Lỗi khi tải danh sách từ vựng!')
     } finally {
       setIsLoading(false)
       setIsFetchingMore(false)
@@ -103,17 +103,27 @@ export function VocabManagePage() {
     try {
       setIsSaving(true)
       if (modal?.id) {
-        await adminVocabApi.update(modal.id, form)
-        toast.success('Cập nhật từ vựng thành công!')
+        const res = await adminVocabApi.update(modal.id, form)
+        toast.success(res?.message)
+        
+        setVocabs(prev => prev.map(item => {
+          if (item.id === modal.id) {
+            // Lấy dữ liệu trả về từ API (hoặc từ form) đè lên dữ liệu cũ
+            const updatedData = res?.data?.data || res?.data || form;
+            return { ...item, ...updatedData };
+          }
+          return item;
+        }))
       } else {
         await adminVocabApi.create(form)
         toast.success('Thêm từ vựng mới thành công!')
+        fetchVocabularies(null)
       }
       setModal(null)
       // Thêm hoặc sửa xong thì quét lại từ đầu trang để thấy dòng mới nhất
-      fetchVocabularies(null) 
+      // fetchVocabularies(null) 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi lưu từ vựng!')
+      toast.error(error.response.data.message || 'Lỗi khi lưu từ vựng!')
     } finally {
       setIsSaving(false)
     }
@@ -123,12 +133,13 @@ export function VocabManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await adminVocabApi.remove(deleteId)
-      toast.success('Đã xóa từ vựng!')
+      const res = await adminVocabApi.remove(deleteId)
+      toast.success(res?.message)
+      setVocabs(prev => prev.filter(item => item.id !== deleteId))
       setDeleteId(null)
-      fetchVocabularies(null) 
+      // fetchVocabularies(null) 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi xóa từ vựng!')
+      toast.error(error.response.data.message || 'Lỗi khi xóa từ vựng!')
     } finally {
       setIsDeleting(false)
     }

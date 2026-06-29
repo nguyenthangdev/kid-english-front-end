@@ -36,7 +36,7 @@ export function AdminLayout() {
 
   const handleLogout = async () => {
     const response = await logout()
-    toast.success(response?.message || 'Đăng xuất thành công!')
+    toast.success(response.data.message || 'Đăng xuất thành công!')
     navigate('/admin/auth/login', { replace: true })
   }
 

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Camera, KeyRound, RefreshCw, Save, Upload } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { adminAuthApi } from '@/apis/admin/index'
+import { adminProfileApi } from '@/apis/admin'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -63,37 +63,38 @@ export function AdminProfilePage() {
   }, [fullName, profileForm])
 
   const handleRefreshProfile = async () => {
-    await refreshUser()
-    toast.success('Đã làm mới hồ sơ!')
+    const res = await refreshUser()
+    toast.success(res.data.message)
   }
 
   const handleUpdateProfile = async (data) => {
-    const response = await adminAuthApi.updateMe({
+    const response = await adminProfileApi.updateProfile({
       fullName: data.fullName,
     })
-
-    login(response.accountAdmin, response.role)
-    toast.success(response.message || 'Cập nhật hồ sơ thành công!')
+    const responseData = response.data
+    login(responseData.accountAdmin, responseData.role)
+    toast.success(responseData.message || 'Cập nhật hồ sơ thành công!')
   }
 
   const handleUploadAvatar = async (data) => {
     const formData = new FormData()
     formData.append('avatar', data.avatar[0])
 
-    const response = await adminAuthApi.uploadAvatar(formData)
-    login(response.accountAdmin, response.role)
+    const response = await adminProfileApi.uploadAvatar(formData)
+    const responseData = response.data
+    login(responseData.accountAdmin, responseData.role)
     avatarForm.reset()
-    toast.success(response.message || 'Cập nhật ảnh đại diện thành công!')
+    toast.success(responseData.message || 'Cập nhật ảnh đại diện thành công!')
   }
 
   const handleChangePassword = async (data) => {
-    const response = await adminAuthApi.changePassword({
+    const response = await adminProfileApi.changePassword({
       currentPassword: data.currentPassword,
       newPassword: data.newPassword,
     })
-
+    const responseData = response.data
     passwordForm.reset()
-    toast.success(response.message || 'Đổi mật khẩu thành công!')
+    toast.success(responseData.message || 'Đổi mật khẩu thành công!')
   }
 
   return (

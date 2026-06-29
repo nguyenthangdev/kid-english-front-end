@@ -9,7 +9,7 @@ Tài liệu này là **nguồn sự thật duy nhất (Single Source of Truth)**
 ```text
 src/
 ├── apis/
-│   ├── admin/index.js       # adminVocabApi, adminQuoteApi, vocabTagsApi, quoteTagsApi,
+│   ├── admin/index.js       # adminVocabApi, adminQuoteApi, adminVocabTagsApi, adminQuoteTagsApi,
 │   │                        # adminAuthApi, adminAccountApi, userAccountApi, adminRoleApi, permissionApi
 │   └── client/index.js      # vocabApi, quoteApi, authUserApi
 ├── assets/
@@ -61,8 +61,8 @@ src/
 │   │   ├── AdminSettingsPage.jsx    # ✅ Kết nối API (adminAuthApi.changePassword)
 │   │   ├── VocabManagePage.jsx      # ✅ Kết nối API (adminVocabApi) - Cursor Pagination + Debounce
 │   │   ├── QuoteManagePage.jsx      # ✅ Kết nối API (adminQuoteApi) - Cursor Pagination + Debounce
-│   │   ├── VoCabTagsManagePage.jsx  # ✅ Kết nối API (vocabTagsApi)
-│   │   ├── QuoteTagsManagePage.jsx  # ✅ Kết nối API (quoteTagsApi)
+│   │   ├── VoCabTagsManagePage.jsx  # ✅ Kết nối API (adminVocabTagsApi)
+│   │   ├── QuoteTagsManagePage.jsx  # ✅ Kết nối API (adminQuoteTagsApi)
 │   │   ├── RoleManagePage.jsx       # ✅ Kết nối API (adminRoleApi)
 │   │   ├── AdminManagePage.jsx      # ⚠️ MOCK DATA - Cần kết nối adminAccountApi
 │   │   ├── UserManagePage.jsx       # ⚠️ MOCK DATA - Cần kết nối userAccountApi
@@ -95,30 +95,32 @@ src/
 
 ### 2.1 Phân hệ Admin — Đã hoàn thiện ✅
 
-| Trang | Trạng thái | Ghi chú |
-|---|---|---|
-| `AdminLoginPage` | ✅ API | `adminAuthApi.loginAdmin` |
-| `AdminProfilePage` | ✅ API | `me`, `updateMe`, `uploadAvatar` |
-| `AdminSettingsPage` | ✅ API | `changePassword` |
-| `VocabManagePage` | ✅ API | Cursor pagination, debounce search, upload ảnh |
-| `QuoteManagePage` | ✅ API | Cursor pagination, debounce search |
-| `VoCabTagsManagePage` | ✅ API | `vocabTagsApi` CRUD |
-| `QuoteTagsManagePage` | ✅ API | `quoteTagsApi` CRUD |
-| `RoleManagePage` | ✅ API | `adminRoleApi` CRUD |
+| Trang                 | Trạng thái | Ghi chú                                        |
+| --------------------- | ---------- | ---------------------------------------------- |
+| `AdminLoginPage`      | ✅ API     | `adminAuthApi.loginAdmin`                      |
+| `AdminProfilePage`    | ✅ API     | `me`, `updateMe`, `uploadAvatar`               |
+| `AdminSettingsPage`   | ✅ API     | `changePassword`                               |
+| `VocabManagePage`     | ✅ API     | Cursor pagination, debounce search, upload ảnh |
+| `QuoteManagePage`     | ✅ API     | Cursor pagination, debounce search             |
+| `VoCabTagsManagePage` | ✅ API     | `adminVocabTagsApi` CRUD                       |
+| `QuoteTagsManagePage` | ✅ API     | `adminQuoteTagsApi` CRUD                       |
+| `RoleManagePage`      | ✅ API     | `adminRoleApi` CRUD                            |
 
 ### 2.2 Phân hệ Admin — Cần hoàn thiện ⚠️
 
 #### `AdminManagePage.jsx` — Cần kết nối `adminAccountApi`
+
 - Hiện tại dùng `MOCK_ADMINS` (useState từ mockData)
 - **Việc cần làm**:
   1. Bỏ import `MOCK_ADMINS`, thêm `useEffect` gọi `adminAccountApi.getAll()` để fetch danh sách
   2. Kết nối nút "Thêm admin" → `adminAccountApi.create(form)`
-  3. Kết nối nút sửa → `adminAccountApi.update(id, form)` 
+  3. Kết nối nút sửa → `adminAccountApi.update(id, form)`
   4. Kết nối nút xóa → `adminAccountApi.remove(id)`
   5. Thêm `toast` thông báo thành công/thất bại
   6. Khi save/delete xong → gọi lại `fetchAdmins()` để reload danh sách
 
 #### `UserManagePage.jsx` — Cần kết nối `userAccountApi`
+
 - Hiện tại dùng `MOCK_USERS` (useState từ mockData)
 - **Việc cần làm**:
   1. Bỏ import `MOCK_USERS`, thêm `useEffect` gọi `userAccountApi.getAll()` để fetch danh sách
@@ -127,19 +129,22 @@ src/
   4. Thêm `toast` thông báo thành công/thất bại
 
 #### `DashboardPage.jsx` — Cần API thống kê thật
+
 - Hiện tại: stats lấy từ `.length` của context mock, "Hoạt động gần đây" là dữ liệu tĩnh
 - **Việc cần làm**:
   1. Tạo `adminDashboardApi` trong `apis/admin/index.js`:
      ```javascript
      export const adminDashboardApi = {
-       getStats: () => requestAuthorized('GET', '/admin/dashboard/stats'),
-       getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
-     }
+       getStats: () => requestAuthorized("GET", "/admin/dashboard/stats"),
+       getRecentActivity: () =>
+         requestAuthorized("GET", "/admin/dashboard/recent-activity"),
+     };
      ```
   2. Trong `DashboardPage`, dùng `useEffect` + `useState` để fetch và hiển thị dữ liệu thật
   3. Thay thế placeholder biểu đồ bằng thư viện `recharts` hoặc `chart.js`
 
 #### `PermissionsPage.jsx` — Cần kết nối `permissionApi`
+
 - Hiện tại: ma trận build từ `MOCK_ROLES`, `handleSave` có TODO nhưng chưa gọi API
 - **Việc cần làm**:
   1. Khi mount, gọi `permissionApi.getMatrix()` để load ma trận thật từ server
@@ -149,6 +154,7 @@ src/
 ### 2.3 Phân hệ Client — Cần hoàn thiện ⚠️
 
 #### `ProfilePage.jsx` — Cần kết nối `UserAuthContext`
+
 - Hiện tại: toàn bộ `useAuth` và header gradient bị comment out, form dùng hardcode value
 - **Việc cần làm**:
   1. Uncomment import `useUserAuth` từ `@/contexts/client/UserAuthContext`
@@ -157,6 +163,7 @@ src/
   4. Kết nối nút "Lưu thay đổi" → `authUserApi.updateMe(form)` → gọi `refreshUser()` từ context
 
 #### `VocabularyPage.jsx` — Cần kết nối `vocabApi`
+
 - Hiện tại: dùng `useVocab()` → `VocabContext` (MOCK_VOCABS), `useCategory()` → `CategoryContext` (MOCK_CATEGORIES)
 - **Việc cần làm**:
   1. Bỏ import VocabContext và CategoryContext
@@ -166,6 +173,7 @@ src/
   5. Cập nhật `vocabApi` trong `apis/client/index.js` nếu endpoint backend thay đổi
 
 #### `QuotesPage.jsx` — Cần kết nối `quoteApi`
+
 - Hiện tại: dùng `useQuote()` → `QuoteContext` (MOCK_QUOTES), filter `isToday` chỉ có ý nghĩa với mock data
 - **Việc cần làm**:
   1. Bỏ import QuoteContext
@@ -174,6 +182,7 @@ src/
   4. Thay tag filter hardcode `['all', 'study', 'motivation', 'friendship']` bằng tag thật từ API
 
 #### `HomePage.jsx` — Cần kết nối dữ liệu thật
+
 - Hiện tại: stats hardcode (0/0), `todayQuote` lấy từ `QuoteContext` (mock)
 - **Việc cần làm**:
   1. Gọi API lấy stats của user đang đăng nhập: số sao, streak, từ đã học, sticker
@@ -185,12 +194,13 @@ src/
 ## 3. Kiến Trúc Kỹ Thuật Nổi Bật
 
 ### 3.1 Dual-Auth Flow — Cách Ly Tuyệt Đối
+
 Hai hệ thống auth chạy song song, **không chia sẻ token, context, hay axios instance**:
 
-| Phân hệ | Context | Axios Instance | Event Force-Logout |
-|---|---|---|---|
-| Admin | `AdminAuthContext` | `authorizedAxiosAdmin` | `force-logout` |
-| Client | `UserAuthContext` | `authorizedAxiosClient` | `force-logout-user` |
+| Phân hệ | Context            | Axios Instance          | Event Force-Logout  |
+| ------- | ------------------ | ----------------------- | ------------------- |
+| Admin   | `AdminAuthContext` | `authorizedAxiosAdmin`  | `force-logout`      |
+| Client  | `UserAuthContext`  | `authorizedAxiosClient` | `force-logout-user` |
 
 - **`PrivateRouteAdmin`**: Chờ `authChecked && !isLoading` trước khi quyết định redirect
 - **`UnauthorizedRoutesAdmin`**: Redirect admin đã đăng nhập từ `/admin/auth/login` → `/admin/dashboard`
@@ -198,89 +208,115 @@ Hai hệ thống auth chạy song song, **không chia sẻ token, context, hay a
 - **`UnauthorizedRoutesUser`**: Redirect user đã đăng nhập từ `/login`, `/register` → `/`
 
 ### 3.2 Silent Token Refresh — Single Promise Locking
+
 Cả `authorizedAxiosAdmin` và `authorizedAxiosClient` đều triển khai cơ chế này:
 
 ```javascript
-let refreshTokenPromise = null
+let refreshTokenPromise = null;
 
 // Response interceptor: khi nhận lỗi 410 (token expired)
 if (error.response?.status === 410) {
   if (!refreshTokenPromise) {
     refreshTokenPromise = refreshTokenAdmin()
       .catch(async (err) => {
-        await logoutAdmin().catch(() => {})
-        window.dispatchEvent(new CustomEvent('force-logout'))
-        return Promise.reject(err)
+        await logoutAdmin().catch(() => {});
+        window.dispatchEvent(new CustomEvent("force-logout"));
+        return Promise.reject(err);
       })
-      .finally(() => { refreshTokenPromise = null })
+      .finally(() => {
+        refreshTokenPromise = null;
+      });
   }
   // Tất cả requests bị treo đều chờ chung 1 promise
-  return refreshTokenPromise.then(() => authorizedAxiosInstance(originalRequest))
+  return refreshTokenPromise.then(() =>
+    authorizedAxiosInstance(originalRequest),
+  );
 }
 ```
 
 **Tại sao dùng 410 thay vì 401?**
+
 - `401` được dùng cho lỗi "sai credentials" khi login
 - `410 Gone` là signal rõ ràng "access token đã hết hạn, cần refresh" — tránh nhập nhằng
 
 ### 3.3 Force Logout — Event-driven Decoupling
+
 Axios interceptor (file JS thuần) không thể import React hooks hay gọi `navigate()`.
+
 - **Giải pháp**: `window.dispatchEvent(new CustomEvent('force-logout'))` / `'force-logout-user'`
 - **React context lắng nghe**: `window.addEventListener('force-logout', handleForceLogout)` trong `useEffect`
 - Kết quả: **zero circular dependency**, code sạch hoàn toàn
 
 ### 3.4 Cursor Pagination (Server-side) cho Admin
+
 `VocabManagePage` và `QuoteManagePage` dùng cursor-based pagination thay vì offset:
 
 ```javascript
-const [nextCursor, setNextCursor] = useState(null)
-const [hasMore, setHasMore] = useState(false)
+const [nextCursor, setNextCursor] = useState(null);
+const [hasMore, setHasMore] = useState(false);
 
 // Load lần đầu hoặc khi search thay đổi: cursorToFetch = null
 // Tải thêm (Load More): cursorToFetch = nextCursor hiện tại
-const fetchVocabularies = useCallback(async (cursorToFetch = null) => {
-  const params = { limit: 10 }
-  if (debouncedKeyword) params.keyword = debouncedKeyword
-  if (cursorToFetch) params.cursor = cursorToFetch
-  const response = await adminVocabApi.getAll(params)
-  if (cursorToFetch) setVocabs(prev => [...prev, ...response.data])
-  else setVocabs(response.data)
-  setNextCursor(response.nextCursor)
-  setHasMore(response.hasMore)
-}, [debouncedKeyword])
+const fetchVocabularies = useCallback(
+  async (cursorToFetch = null) => {
+    const params = { limit: 10 };
+    if (debouncedKeyword) params.keyword = debouncedKeyword;
+    if (cursorToFetch) params.cursor = cursorToFetch;
+    const response = await adminVocabApi.getAll(params);
+    if (cursorToFetch) setVocabs((prev) => [...prev, ...response.data]);
+    else setVocabs(response.data);
+    setNextCursor(response.nextCursor);
+    setHasMore(response.hasMore);
+  },
+  [debouncedKeyword],
+);
 ```
 
 **Ưu điểm**: Hiệu năng ổn định với dữ liệu lớn, tránh "phantom row" khi dữ liệu thay đổi giữa các trang.
 
 ### 3.5 Debounce Search — URL Sync
+
 `VocabManagePage` đồng bộ keyword tìm kiếm vào URL (`?keyword=...`) để có thể bookmark và chia sẻ:
 
 ```javascript
-const [inputValue, setInputValue] = useState(urlKeyword) // Hiển thị ngay
-const debouncedKeyword = useDebounce(inputValue, 500)    // Gọi API sau 500ms
+const [inputValue, setInputValue] = useState(urlKeyword); // Hiển thị ngay
+const debouncedKeyword = useDebounce(inputValue, 500); // Gọi API sau 500ms
 
 useEffect(() => {
   // Đồng bộ URL
-  debouncedKeyword ? searchParams.set('keyword', debouncedKeyword) : searchParams.delete('keyword')
-  setSearchParams(searchParams)
-  fetchVocabularies(null) // Reset về trang đầu mỗi khi search thay đổi
-}, [debouncedKeyword])
+  debouncedKeyword
+    ? searchParams.set("keyword", debouncedKeyword)
+    : searchParams.delete("keyword");
+  setSearchParams(searchParams);
+  fetchVocabularies(null); // Reset về trang đầu mỗi khi search thay đổi
+}, [debouncedKeyword]);
 ```
 
 ### 3.6 Composable Providers — Chống Provider Hell
+
 ```javascript
 // composeProviders.jsx
 export function composeProviders(...providers) {
   return ({ children }) =>
     providers.reduceRight(
       (acc, Provider) => <Provider>{acc}</Provider>,
-      children
-    )
+      children,
+    );
 }
 
 // AppProviders.jsx
-export const ClientProviders = composeProviders(UserAuthProvider, VocabProvider, QuoteProvider, CategoryProvider)
-export const AdminProviders  = composeProviders(AdminAuthProvider, VocabTagsProvider, QuoteTagsProvider, RoleProvider)
+export const ClientProviders = composeProviders(
+  UserAuthProvider,
+  VocabProvider,
+  QuoteProvider,
+  CategoryProvider,
+);
+export const AdminProviders = composeProviders(
+  AdminAuthProvider,
+  VocabTagsProvider,
+  QuoteTagsProvider,
+  RoleProvider,
+);
 ```
 
 ---
@@ -307,53 +343,57 @@ export const AdminProviders  = composeProviders(AdminAuthProvider, VocabTagsProv
 
 ```javascript
 // Mẫu cho các page cần fetch danh sách + CRUD (AdminManagePage, UserManagePage,...)
-const [items, setItems] = useState([])
-const [isLoading, setIsLoading] = useState(true)
-const [isSaving, setIsSaving] = useState(false)
-const [isDeleting, setIsDeleting] = useState(false)
+const [items, setItems] = useState([]);
+const [isLoading, setIsLoading] = useState(true);
+const [isSaving, setIsSaving] = useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
 
 const fetchItems = useCallback(async () => {
   try {
-    setIsLoading(true)
-    const response = await someApi.getAll()
-    setItems(response?.data || [])
+    setIsLoading(true);
+    const response = await someApi.getAll();
+    setItems(response?.data || []);
   } catch (error) {
-    toast.error(error.message || 'Lỗi khi tải dữ liệu!')
+    toast.error(error.message || "Lỗi khi tải dữ liệu!");
   } finally {
-    setIsLoading(false)
+    setIsLoading(false);
   }
-}, [])
+}, []);
 
-useEffect(() => { fetchItems() }, [fetchItems])
+useEffect(() => {
+  fetchItems();
+}, [fetchItems]);
 
 const handleSave = async (form) => {
   try {
-    setIsSaving(true)
-    if (modal?.id) await someApi.update(modal.id, form)
-    else await someApi.create(form)
-    toast.success('Lưu thành công!')
-    setModal(null)
-    fetchItems()
+    setIsSaving(true);
+    if (modal?.id) await someApi.update(modal.id, form);
+    else await someApi.create(form);
+    toast.success("Lưu thành công!");
+    setModal(null);
+    fetchItems();
   } catch (error) {
-    toast.error(error.message || 'Lỗi khi lưu!')
+    toast.error(error.message || "Lỗi khi lưu!");
   } finally {
-    setIsSaving(false)
+    setIsSaving(false);
   }
-}
+};
 ```
 
 ### 4.3 Thêm API Mới
 
 Mọi API call mới đều phải đặt trong đúng file:
+
 - **Admin**: `src/apis/admin/index.js` — dùng `request` (public) hoặc `requestAuthorized` (cần auth)
 - **Client**: `src/apis/client/index.js` — dùng `request` hoặc `requestAuthorizedClient`
 
 ```javascript
 // Ví dụ thêm adminDashboardApi vào src/apis/admin/index.js:
 export const adminDashboardApi = {
-  getStats:          () => requestAuthorized('GET', '/admin/dashboard/stats'),
-  getRecentActivity: () => requestAuthorized('GET', '/admin/dashboard/recent-activity'),
-}
+  getStats: () => requestAuthorized("GET", "/admin/dashboard/stats"),
+  getRecentActivity: () =>
+    requestAuthorized("GET", "/admin/dashboard/recent-activity"),
+};
 ```
 
 ---
@@ -374,16 +414,19 @@ export const adminDashboardApi = {
 ## 6. Thứ Tự Ưu Tiên Công Việc (Priority Roadmap)
 
 ### 🔴 Cao — Ảnh hưởng trực tiếp đến UX người dùng
+
 1. **`ProfilePage` (Client)**: Kết nối `UserAuthContext` + `authUserApi.updateMe`
 2. **`VocabularyPage` (Client)**: Thay MOCK_VOCABS bằng `vocabApi.getAll()`
 3. **`QuotesPage` (Client)**: Thay MOCK_QUOTES bằng `quoteApi.getAll()`
 
 ### 🟡 Trung — Ảnh hưởng đến chức năng Admin
+
 4. **`AdminManagePage`**: Kết nối `adminAccountApi` (CRUD admins)
 5. **`UserManagePage`**: Kết nối `userAccountApi` (fetch + update users)
 6. **`PermissionsPage`**: Kết nối `permissionApi.getMatrix()` + `permissionApi.save()`
 
 ### 🟢 Thấp — Nice-to-have
+
 7. **`DashboardPage`**: API thống kê thật + thư viện biểu đồ (recharts)
 8. **`HomePage` (Client)**: API stats cá nhân user (streak, từ đã học, sao)
 9. **Xóa `mockData.js`**: Sau khi tất cả pages đã kết nối API thật

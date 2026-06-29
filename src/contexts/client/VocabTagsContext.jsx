@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useReducer, useContext, useCallback } from 'react'
-import { adminVocabTagsApi } from '@/apis/admin/index'
+import { adminVocabTagsApi } from '@/apis/admin'
 import { toast } from 'react-toastify'
 import { adminVocabTagsReducer, initialState } from '@/reducers/admin/adminVocabTagsReducer'
 
@@ -16,12 +16,11 @@ export function VocabTagsProvider({ children }) {
     dispatch({ type: 'FETCH_START' })
     try {
       const response = await adminVocabTagsApi.getAll()
-      console.log('response: ', response)
-      const data = response?.data || []
+      const data = response.data
       dispatch({ type: 'FETCH_SUCCESS', payload: data })
     } catch (error) {
-      dispatch({ type: 'FETCH_ERROR', payload: error.response.data.message })
-      toast.error(error.response.data.message || 'Lỗi khi tải danh sách thẻ')
+      dispatch({ type: 'FETCH_ERROR', payload: error.message })
+      toast.error(error.message || 'Lỗi khi tải danh sách thẻ')
     }
   }, [state.isFetched])
 

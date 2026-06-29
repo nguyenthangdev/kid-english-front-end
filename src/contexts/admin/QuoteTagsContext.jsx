@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useReducer, useContext, useCallback } from 'react'
-import { quoteTagsApi } from '@/apis/admin/index'
+import { adminQuoteTagsApi } from '@/apis/admin'
 import { toast } from 'react-toastify'
 import { adminQuoteTagsReducer, quoteTagsInitialState } from '@/reducers/admin/adminQuoteTagsReducer'
 
@@ -17,7 +17,7 @@ export function QuoteTagsProvider({ children }) {
     dispatch({ type: 'FETCH_START' })
     try {
       // Vì đây là Context cung cấp data cho Dropdown, ta cần truyền limit lớn để lấy đủ thẻ
-      const response = await quoteTagsApi.getAll()
+      const response = await adminQuoteTagsApi.getAll()
       console.log('response from quote: ', response)
       // Bóc tách dữ liệu theo chuẩn NestJS trả về (CursorPaginatedResult)
       const tagsData = response?.data || []

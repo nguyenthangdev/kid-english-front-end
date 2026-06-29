@@ -68,11 +68,12 @@ export function VocabModal({ open, item, tags, onClose, onSave, isSaving }) {
         formData.append('image', selectedFile)
         
         const uploadRes = await adminVocabApi.uploadImage(formData)
+        console.log('uploadRes: ', uploadRes)
         // Map đúng cấu trúc { data: { imageUrl: ... } } mà NestJS trả về
         finalImageUrl = uploadRes?.data?.data?.imageUrl || uploadRes?.data?.imageUrl
         
       } catch (error) {
-        toast.error('Lỗi tải ảnh: ' + (error.message || 'Thử lại sau'))
+        toast.error('Lỗi tải ảnh: ' + (error.response.data.message || 'Thử lại sau'))
         setIsUploading(false)
         return 
       } finally {

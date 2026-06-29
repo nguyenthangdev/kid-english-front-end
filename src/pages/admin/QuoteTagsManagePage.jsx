@@ -8,7 +8,7 @@ import { TagsModal } from '@/components/admin/TagsModal'
 import { SearchBar } from '@/components/SearchBar'
 import { Button } from '@/components/ui/button'
 import { useQuoteTags } from '@/contexts/admin/QuoteTagsContext'
-import { quoteTagsApi } from '@/apis/admin'
+import { adminQuoteTagsApi } from '@/apis/admin'
 import { useDebounce } from '@/hooks/useDebounce'
 import { toast } from 'react-toastify'
 import { Loader2, SquarePen, Trash2 } from 'lucide-react'
@@ -49,7 +49,7 @@ export function QuoteTagsManagePage() {
       }
       if (cursorToFetch) params.cursor = cursorToFetch
 
-      const response = await quoteTagsApi.getAll(params)
+      const response = await adminQuoteTagsApi.getAll(params)
       const payload = response?.data?.data ? response.data : response
 
       if (cursorToFetch) {
@@ -62,7 +62,7 @@ export function QuoteTagsManagePage() {
       setHasMore(payload.hasMore)
 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi tải danh sách thẻ!')
+      toast.error(error.response.data.message || 'Lỗi khi tải danh sách thẻ!')
     } finally {
       setIsLoading(false)
       setIsFetchingMore(false)
@@ -101,10 +101,10 @@ export function QuoteTagsManagePage() {
       }
 
       if (modal?.id) {
-        await quoteTagsApi.update(modal.id, payload)
+        await adminQuoteTagsApi.update(modal.id, payload)
         toast.success('Cập nhật thẻ thành công!')
       } else {
-        await quoteTagsApi.create(payload)
+        await adminQuoteTagsApi.create(payload)
         toast.success('Thêm thẻ mới thành công!')
       }
       
@@ -123,8 +123,8 @@ export function QuoteTagsManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await quoteTagsApi.remove(deleteId)
-      toast.success('Đã xóa thẻ thành công!')
+      const res = await adminQuoteTagsApi.remove(deleteId)
+      toast.success(res.message)
       setDeleteId(null)
       
       fetchLocalTags(null)

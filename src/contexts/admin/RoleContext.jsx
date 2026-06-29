@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useReducer, useContext, useCallback } from 'react'
-import { adminRoleApi } from '@/apis/admin/index'
+import { adminRoleApi } from '@/apis/admin'
 // import { toast } from 'react-toastify'
 import { adminRoleReducer, roleInitialState } from '@/reducers/admin/adminRoleReducer'
 
@@ -16,8 +16,7 @@ export function RoleProvider({ children }) {
     dispatch({ type: 'FETCH_START' })
     try {
       const response = await adminRoleApi.getAll()
-      console.log('response: ', response)
-      const payload = response?.data
+      const payload = response?.data || []
 
       dispatch({ type: 'FETCH_SUCCESS', payload: payload })
     } catch (error) {

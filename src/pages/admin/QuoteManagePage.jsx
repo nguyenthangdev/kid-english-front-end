@@ -64,7 +64,7 @@ export function QuoteManagePage() {
       setHasMore(payload?.hasMore)
 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi tải danh sách câu nói!')
+      toast.error(error.response.data.message || 'Lỗi khi tải danh sách câu nói!')
     } finally {
       setIsLoading(false)
       setIsFetchingMore(false)
@@ -107,7 +107,7 @@ export function QuoteManagePage() {
       setModal(null)
       fetchQuotes(null) 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi lưu câu nói!')
+      toast.error(error.response.data.message || 'Lỗi khi lưu câu nói!')
     } finally {
       setIsSaving(false)
     }
@@ -116,12 +116,12 @@ export function QuoteManagePage() {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await adminQuoteApi.remove(deleteId)
-      toast.success('Đã xóa câu nói thành công!')
+      const res = await adminQuoteApi.remove(deleteId)
+      toast.success(res.message)
       setDeleteId(null)
       fetchQuotes(null) 
     } catch (error) {
-      toast.error(error.message || 'Lỗi khi xóa câu nói!')
+      toast.error(error.response.data.message || 'Lỗi khi xóa câu nói!')
     } finally {
       setIsDeleting(false)
     }
